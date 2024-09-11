@@ -1,7 +1,9 @@
-import "./App.css";
+import './assets/styles/App.css'
 
 function App() {
-  return <div>Hello World!!!</div>;
+    let string: string = 'abc'
+
+    return <div>Hello World!!!</div>
 }
 
-export default App;
+export default App
