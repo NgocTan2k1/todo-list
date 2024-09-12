@@ -1,9 +1,16 @@
-import './assets/styles/App.css'
+import React, { ReactElement } from 'react';
+import './assets/styles/App.css';
 
-function App() {
-    let string: string = 'abc'
+function App(): ReactElement {
+    // const logger = (message: any) => {
+    //     console.log(message);
+    // };
 
-    return <div>Hello World!!!</div>
+    // logger(1);
+    // logger('Hello World');
+    const string: string = 'Hello World';
+
+    return <div>{string}</div>;
 }
 
-export default App
+export default App;
