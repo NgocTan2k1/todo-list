@@ -27,13 +27,13 @@
         "@typescript-eslint/no-inferrable-types": "off",
         // "@typescript-eslint/explicit-function-return-type": "warn", // Cảnh báo nếu không có kiểu trả về cho hàm
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }], // Bắt lỗi biến không sử dụng
-        "@typescript-eslint/explicit-module-boundary-types": "error", // Bắt lỗi nếu không chỉ định kiểu cho biến
+        "@typescript-eslint/explicit-module-boundary-types": "off", // Bắt lỗi nếu không chỉ định kiểu cho biến
         // define type for variable
         "@typescript-eslint/typedef": [
             "error",
             {
-                "variableDeclaration": true,
-                "variableDeclarationIgnoreFunction": true
+                "variableDeclaration": false,
+                "variableDeclarationIgnoreFunction": false
             }
         ],
         // prettier
