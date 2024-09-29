@@ -7,7 +7,7 @@ import NotFoundPage, { loaderNotFoundPage } from '../pages/not-found/NotFound';
 const privateRoutes = createBrowserRouter([
     {
         id: 'HomePage',
-        path: '/',
+        path: '/home',
         Component: HomePage,
     },
     {

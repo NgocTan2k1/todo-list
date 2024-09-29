@@ -5,7 +5,7 @@ export const loaderSignInPage = async (): Promise<Response | string> => {
 };
 
 const SignInPage: React.FC = () => {
-    return <div> SignIn Page</div>;
+    return <div> Sign In Page</div>;
 };
 
 export default SignInPage;
