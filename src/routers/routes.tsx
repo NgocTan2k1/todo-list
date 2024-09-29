@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
-import LoginPage, { loaderLoginPage } from '../pages/login/Login';
+import SignInPage, { loaderSignInPage } from '../pages/sign-in/SignIn';
+import SignUpPage, { loaderSignUpPage } from '../pages/sign-up/SignUp';
 import HomePage from '../pages/home/HomePage';
 import NotFoundPage, { loaderNotFoundPage } from '../pages/not-found/NotFound';
 
@@ -19,10 +20,16 @@ const privateRoutes = createBrowserRouter([
 
 const publicRoutes = createBrowserRouter([
     {
-        id: 'LoginPage',
-        path: '/login',
-        Component: LoginPage,
-        loader: loaderLoginPage,
+        id: 'SignIn',
+        path: '/sign-in',
+        Component: SignInPage,
+        loader: loaderSignInPage,
+    },
+    {
+        id: 'SignUp',
+        path: '/sign-up',
+        Component: SignUpPage,
+        loader: loaderSignUpPage,
     },
     {
         id: 'NotFound',
