@@ -34,7 +34,7 @@ const NotFoundPage: React.FC = () => {
      */
     const handleNavigate = () => {
         if (!isLogged) {
-            navigate('/login');
+            navigate('/sign-in');
         } else {
             navigate('/home');
         }

@@ -6,7 +6,7 @@ export interface IAuthentication {
 }
 
 const useAuthenticationStores = create<IAuthentication>()((set) => ({
-    isLogged: true,
+    isLogged: false,
     setIsLogged: (logged) => set(() => ({ isLogged: logged })),
 }));
 
