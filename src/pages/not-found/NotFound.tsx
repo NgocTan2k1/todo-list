@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import useAuthenticationStores from '../../stores/authenticationStores';
+import { useHandleNavigation } from '../../hooks/useHandleNavigation';
 // import useAuthenticationStores from '../../stores/authenticationStores';
 
 export const loaderNotFoundPage = async (): Promise<string> => {
@@ -11,7 +11,8 @@ export const loaderNotFoundPage = async (): Promise<string> => {
 };
 
 const NotFoundPage: React.FC = () => {
-    const navigate = useNavigate();
+    // be customzied hooks
+    const handleNavigation = useHandleNavigation();
     const isLogged = useAuthenticationStores((state) => state.isLogged);
     const [countDown, setCountDown] = useState(5);
 
@@ -34,9 +35,9 @@ const NotFoundPage: React.FC = () => {
      */
     const handleNavigate = () => {
         if (!isLogged) {
-            navigate('/sign-in');
+            handleNavigation('/sign-in');
         } else {
-            navigate('/home');
+            handleNavigation('/home');
         }
     };
     return (

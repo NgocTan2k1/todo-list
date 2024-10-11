@@ -1,4 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+// firebase
+// import { firebaseApp } from '../../firebase';
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+
+// components
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,7 +16,10 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
+
+// css
 import { styled } from '@mui/material/styles';
+import { useHandleNavigation } from '../../hooks/useHandleNavigation';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -43,16 +52,24 @@ export const loaderSignUpPage = async (): Promise<Response | string> => {
     return await 'loaderSignUpPage';
 };
 
-export default function SignUp() {
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-    const [passwordError, setPasswordError] = React.useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
-    const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = React.useState('');
-    const [nameError, setNameError] = React.useState(false);
-    const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+const SignUp: React.FC = () => {
+    // The hooks were customized
+    const handleNavigation = useHandleNavigation();
 
+    // state
+    const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+    const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState('');
+    const [nameError, setNameError] = useState(false);
+    const [nameErrorMessage, setNameErrorMessage] = useState('');
+
+    /**
+     * function to validate form
+     * @returns
+     */
     const validateInputs = () => {
         const email = document.getElementById('email') as HTMLInputElement;
         const password = document.getElementById('password') as HTMLInputElement;
@@ -79,17 +96,17 @@ export default function SignUp() {
             setPasswordErrorMessage('');
         }
 
-        if (!confirmPassword.value || confirmPassword.value !== password.value) {
+        if (password.value && (!confirmPassword.value || confirmPassword.value !== password.value)) {
             setConfirmPasswordError(true);
             setConfirmPasswordErrorMessage('Confirm Password no match!!!');
-            setPasswordError(true);
-            setPasswordErrorMessage('');
+            // setPasswordError(true);
+            // setPasswordErrorMessage('');
             isValid = false;
         } else {
             setConfirmPasswordError(false);
             setConfirmPasswordErrorMessage('');
-            setPasswordError(false);
-            setPasswordErrorMessage('');
+            // setPasswordError(false);
+            // setPasswordErrorMessage('');
         }
 
         if (!name.value || name.value.length < 1) {
@@ -104,15 +121,56 @@ export default function SignUp() {
         return isValid;
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    /**
+     * function to submit form sign up
+     * @param event Event DOM
+     * @returns
+     */
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if (emailError || passwordError || confirmPasswordError || nameError) {
+            return;
+        }
+
         const data = new FormData(event.currentTarget);
-        console.log({
-            name: data.get('name'),
-            lastName: data.get('lastName'),
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        const email = String(data.get('email'));
+        // const name = String(data.get('name'));
+        const password = String(data.get('password'));
+        // const allowExtraEmails = String(data.get('allowExtraEmails'));
+
+        try {
+            const auth = getAuth();
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            console.log('userCredential:', userCredential);
+            console.log('user:', userCredential.user);
+
+            // save user in database
+
+            // redirect /sign-in
+            handleNavigation('/sign-in');
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    setEmailError(true);
+                    setEmailErrorMessage('Email exists');
+                    break;
+                default:
+                    setNameError(true);
+                    setEmailError(true);
+                    setPasswordError(true);
+                    setConfirmPasswordError(true);
+                    setNameErrorMessage('The system is experiencing an error, please try again later.');
+                    setEmailErrorMessage('The system is experiencing an error, please try again later.');
+                    setPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    setConfirmPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    // ===== TODO =====
+                    // send mail for admin
+                    // === END TODO ===
+                    break;
+            }
+        }
     };
 
     return (
@@ -126,7 +184,11 @@ export default function SignUp() {
                     }}
                 >
                     <Card variant="outlined">
-                        <Typography component="h1" variant="h4" sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
+                        <Typography
+                            component="h1"
+                            variant="h4"
+                            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
+                        >
                             Sign up
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -192,7 +254,7 @@ export default function SignUp() {
                                 />
                             </FormControl>
                             <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                                control={<Checkbox name="allowExtraEmails" color="primary" />}
                                 label="I want to receive updates via email."
                             />
                             <Button type="submit" fullWidth variant="contained" onClick={validateInputs}>
@@ -201,7 +263,14 @@ export default function SignUp() {
                             <Typography sx={{ textAlign: 'center' }}>
                                 Already have an account?{' '}
                                 <span>
-                                    <Link href="/sign-in" variant="body2" sx={{ alignSelf: 'center' }}>
+                                    <Link
+                                        className="cursor-pointer"
+                                        variant="body2"
+                                        sx={{ alignSelf: 'center' }}
+                                        onClick={() => {
+                                            handleNavigation('/sign-in');
+                                        }}
+                                    >
                                         Sign in
                                     </Link>
                                 </span>
@@ -212,4 +281,6 @@ export default function SignUp() {
             </SignUpContainer>
         </>
     );
-}
+};
+
+export default SignUp;
