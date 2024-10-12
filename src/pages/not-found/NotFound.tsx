@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
+
+// The customized components
+// CSS
+// The stores
 import useAuthenticationStores from '../../stores/authenticationStores';
+
+// The customized hooks
 import { useHandleNavigation } from '../../hooks/useHandleNavigation';
-// import useAuthenticationStores from '../../stores/authenticationStores';
+
+// The constants
 
 export const loaderNotFoundPage = async (): Promise<string> => {
     // const isLogged = useAuthenticationStores((state) => state.isLogged);
@@ -41,7 +48,7 @@ const NotFoundPage: React.FC = () => {
         }
     };
     return (
-        <div>
+        <div className="absolute z-[5000] top-0 bottom-0 right-0 left-0 bg-slate-100">
             <h2>NotFound Page</h2>
             <button className="link underline" onClick={handleNavigate}>
                 The page will be redirected to the <strong>{isLogged ? 'Home' : 'Sign In'}</strong> page after {countDown}{' '}

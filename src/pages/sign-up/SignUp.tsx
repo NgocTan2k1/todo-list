@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 // import { firebaseApp } from '../../firebase';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 
-// components
+// The components
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -17,9 +17,15 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 
-// css
+// The customized components
+// CSS
 import { styled } from '@mui/material/styles';
 import { useHandleNavigation } from '../../hooks/useHandleNavigation';
+import BaseNewPage from '../../components/layout/BasePage';
+
+// The stores
+// The customized hooks
+// The constants
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -174,7 +180,7 @@ const SignUp: React.FC = () => {
     };
 
     return (
-        <>
+        <BaseNewPage>
             <SignUpContainer direction="column" justifyContent="space-between">
                 <Stack
                     sx={{
@@ -279,7 +285,7 @@ const SignUp: React.FC = () => {
                     </Card>
                 </Stack>
             </SignUpContainer>
-        </>
+        </BaseNewPage>
     );
 };
 

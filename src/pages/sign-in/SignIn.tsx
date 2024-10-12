@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { firebaseApp } from '../../firebase';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
-// components
+// The components
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -17,17 +17,23 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
+
+// The customized components
+import BaseNewPage from '../../components/layout/BasePage';
 import ForgotPassword from './ForgotPassword';
 import BaseModal from '../../components/modal/BaseModal';
-// css
+
+// CSS
 import { styled } from '@mui/material/styles';
 
-// stores
+// The stores
 import useAuthenticationStores from '../../stores/authenticationStores';
 import useCommonStores from '../../stores/commonStores';
 
-// the customized hooks
+// The customized hooks
 import { useHandleNavigation } from '../../hooks/useHandleNavigation';
+
+// The constants
 
 export const loaderSignInPage = async (): Promise<string> => {
     return 'string';
@@ -203,7 +209,7 @@ const SignIn: React.FC = () => {
     };
 
     return (
-        <div className="h-[100vh]">
+        <BaseNewPage>
             <BaseModal
                 isOpen={isNoticeModal}
                 setIsOpen={() => setIsNoticeModal(false)}
@@ -301,7 +307,7 @@ const SignIn: React.FC = () => {
                     </Box>
                 </Card>
             </SignInContainer>
-        </div>
+        </BaseNewPage>
     );
 };
 

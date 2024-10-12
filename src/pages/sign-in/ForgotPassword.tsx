@@ -1,6 +1,7 @@
 import React from 'react';
 
-// components
+// firebase
+// The components
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,10 +9,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import OutlinedInput from '@mui/material/OutlinedInput';
-// css
 
-// stores
-
+// The customized components
+// CSS
+// The stores
+// The customized hooks
+// The constants
 interface IForgotPassword {
     open: boolean;
     handleClose: () => void;

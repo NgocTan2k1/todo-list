@@ -12,13 +12,14 @@ import BaseNewPage from '../../components/layout/BasePage';
 // The stores
 // The customized hooks
 // The constants
-const HomePage: React.FC = () => {
+
+const ProfilePage: React.FC = () => {
     // firebase
     const auth = getAuth(firebaseApp);
 
     return (
         <BaseNewPage>
-            <div className="text-9xl bg-blue-500 text-white p-5">Home Page</div>{' '}
+            <div className="text-9xl bg-blue-500 text-white p-5">Profile Page</div>{' '}
             <button
                 onClick={() => {
                     signOut(auth);
@@ -30,4 +31,4 @@ const HomePage: React.FC = () => {
     );
 };
 
-export default HomePage;
+export default ProfilePage;
