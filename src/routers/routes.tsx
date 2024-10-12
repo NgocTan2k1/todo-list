@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import HomePage from '../pages/home/HomePage';
 import ProfilePage from '../pages/profile/ProfilePage';
 import SignInPage, { loaderSignInPage } from '../pages/sign-in/SignIn';
 import SignUpPage, { loaderSignUpPage } from '../pages/sign-up/SignUp';
 import NotFoundPage, { loaderNotFoundPage } from '../pages/not-found/NotFound';
+
+import HomeIcon from '@mui/icons-material/Home';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export interface IRoute {
     id: string;
@@ -14,6 +17,7 @@ export interface IRoute {
     tooltipText?: string;
     primaryText?: string;
     isMenu: boolean;
+    IconMenu?: ReactElement;
 }
 
 export const privateRoutes: IRoute[] = [
@@ -24,6 +28,7 @@ export const privateRoutes: IRoute[] = [
         tooltipText: 'Home',
         primaryText: 'Home',
         isMenu: true,
+        IconMenu: <HomeIcon />,
     },
     {
         id: 'ProfilePage',
@@ -32,6 +37,7 @@ export const privateRoutes: IRoute[] = [
         tooltipText: 'Profile',
         primaryText: 'Your Profile',
         isMenu: true,
+        IconMenu: <AccountCircleIcon />,
     },
     {
         id: 'NotFound',

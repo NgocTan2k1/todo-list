@@ -1,31 +1,27 @@
 import React from 'react';
 
 // firebase
-import { getAuth, signOut } from 'firebase/auth';
-import { firebaseApp } from '../../firebase';
-
 // The components
 // The customized components
 import BaseNewPage from '../../components/layout/BasePage';
 
 // CSS
+import styles from './HomePage.module.css';
 // The stores
 // The customized hooks
+import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
+
 // The constants
 const HomePage: React.FC = () => {
-    // firebase
-    const auth = getAuth(firebaseApp);
+    // The customized hooks
+    const cx = useHandleBindingClass(styles);
 
     return (
-        <BaseNewPage>
-            <div className="text-9xl bg-blue-500 text-white p-5">Home Page</div>{' '}
-            <button
-                onClick={() => {
-                    signOut(auth);
-                }}
-            >
-                SignOut
-            </button>
+        <BaseNewPage tailwindCSS={cx('wrapper__home-page', 'flex flex-col h-full w-full')}>
+            <div className={cx('title', 'text-[1.8rem]')}>
+                <h2>Home Page</h2>
+            </div>
+            <div className={cx('container', 'flex-full')}></div>
         </BaseNewPage>
     );
 };

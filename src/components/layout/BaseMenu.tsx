@@ -15,8 +15,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // The customized components
 // CSS
@@ -97,6 +96,8 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
     // stores
     const isExpandMenu = useCommonStores((state) => state.isExpandMenu);
     const setIsExpandMenu = useCommonStores((state) => state.setIsExpandMenu);
+    const currentIndex = useCommonStores((state) => state.currentIndex);
+    const setCurrentIndex = useCommonStores((state) => state.setCurrentIndex);
 
     // states
     const theme = useTheme();
@@ -111,10 +112,10 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
 
     return (
         <>
-            <Drawer variant="permanent" open={isExpandMenu}>
-                <DrawerHeader className={cx('menu__icons', !isExpandMenu && '!justify-center')}>
+            <Drawer className={cx('wrapper__base-menu', 'flex')} variant="permanent" open={isExpandMenu}>
+                <DrawerHeader className={cx('menu__icons', !isExpandMenu ? '!justify-center' : '!justify-between')}>
                     <IconButton
-                        className={cx('menu__icon--expand', '!m-0', isExpandMenu && ' !hidden')}
+                        className={cx('menu__icon--expand', '!m-0', isExpandMenu && '!hidden')}
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
@@ -122,42 +123,42 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                     >
                         <MenuIcon />
                     </IconButton>
+                    {isExpandMenu && <h3 className={cx('', 'text-[1.6rem] w-full text-center')}>Todo List Menu</h3>}
                     <IconButton
-                        className={cx('menu__icon--collapse', 'h-full !rounded-none')}
+                        className={cx('menu__icon--collapse', 'h-full !rounded-none !text-[1.6rem]', !isExpandMenu && '!hidden')}
                         onClick={handleDrawerClose}
-                        sx={[!isExpandMenu && { display: 'none' }]}
                     >
                         {theme.direction === 'rtl' ? <ChevronRightIcon className={cx('h-full')} /> : <ChevronLeftIcon />}
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                <List>
+                <List className={cx('menu__list', 'flex-full')}>
                     {privateRoutes.map(
                         (route, index) =>
                             route?.isMenu && (
                                 <ListItem
-                                    onClick={() => handleNavigation(route.path)}
+                                    className={cx('menu__item', 'block', currentIndex === index && 'bg-[#E0E0E0]')}
+                                    onClick={() => {
+                                        handleNavigation(route.path);
+                                        setCurrentIndex(index);
+                                    }}
                                     key={index}
                                     disablePadding
-                                    sx={{ display: 'block' }}
                                 >
                                     <ListItemButton
-                                        sx={[
-                                            {
-                                                minHeight: 48,
-                                                px: 2.5,
-                                            },
-                                            isExpandMenu
-                                                ? {
-                                                      justifyContent: 'initial',
-                                                  }
-                                                : {
-                                                      justifyContent: 'center',
-                                                  },
-                                        ]}
+                                        className={cx(
+                                            'menu__item--icon',
+                                            '!min-h-[48px] !px-[20px]',
+                                            isExpandMenu ? '!justify-initial' : '!justify-center',
+                                        )}
                                     >
                                         {!isExpandMenu ? (
-                                            <Tooltip title={route.tooltipText} placement="right-end" arrow>
+                                            <Tooltip
+                                                className={cx('menu__item--tooltip', '!text-[1.6rem]')}
+                                                title={route.tooltipText}
+                                                placement="right-end"
+                                                arrow
+                                            >
                                                 <ListItemIcon
                                                     sx={[
                                                         {
@@ -173,7 +174,7 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                                               },
                                                     ]}
                                                 >
-                                                    <InboxIcon />
+                                                    {route?.IconMenu}
                                                 </ListItemIcon>
                                             </Tooltip>
                                         ) : (
@@ -192,21 +193,13 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                                           },
                                                 ]}
                                             >
-                                                <InboxIcon />
+                                                {route?.IconMenu}
                                             </ListItemIcon>
                                         )}
 
                                         <ListItemText
+                                            className={cx('menu__item--name', isExpandMenu ? 'opacity-100' : 'opacity-0')}
                                             primary={route.primaryText}
-                                            sx={[
-                                                isExpandMenu
-                                                    ? {
-                                                          opacity: 1,
-                                                      }
-                                                    : {
-                                                          opacity: 0,
-                                                      },
-                                            ]}
                                         />
                                     </ListItemButton>
                                 </ListItem>
@@ -214,24 +207,48 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                     )}
                 </List>
                 <Divider />
-                <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                sx={[
-                                    {
-                                        minHeight: 48,
-                                        px: 2.5,
-                                    },
-                                    isExpandMenu
-                                        ? {
-                                              justifyContent: 'initial',
-                                          }
-                                        : {
-                                              justifyContent: 'center',
-                                          },
-                                ]}
-                            >
+                <List className={cx('menu__list', 'flex-0')}>
+                    <ListItem
+                        className={cx('menu__item', 'block', currentIndex === 9999 && 'bg[#E0E0E0]')}
+                        onClick={() => {
+                            handleNavigation('/setting');
+                            setCurrentIndex(9999);
+                        }}
+                        disablePadding
+                    >
+                        <ListItemButton
+                            className={cx(
+                                'menu__item--icon',
+                                '!min-h-[48px] !px-[20px]',
+                                isExpandMenu ? '!justify-initial' : '!justify-center',
+                            )}
+                        >
+                            {!isExpandMenu ? (
+                                <Tooltip
+                                    className={cx('menu__item--tooltip', '!text-[1.6rem]')}
+                                    title={'Setting'}
+                                    placement="right-end"
+                                    arrow
+                                >
+                                    <ListItemIcon
+                                        sx={[
+                                            {
+                                                minWidth: 0,
+                                                justifyContent: 'center',
+                                            },
+                                            isExpandMenu
+                                                ? {
+                                                      mr: 3,
+                                                  }
+                                                : {
+                                                      mr: 'auto',
+                                                  },
+                                        ]}
+                                    >
+                                        <SettingsIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            ) : (
                                 <ListItemIcon
                                     sx={[
                                         {
@@ -247,24 +264,17 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                               },
                                     ]}
                                 >
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                    <SettingsIcon />
                                 </ListItemIcon>
-                                <ListItemText
-                                    primary={text}
-                                    sx={[
-                                        isExpandMenu
-                                            ? {
-                                                  opacity: 1,
-                                              }
-                                            : {
-                                                  opacity: 0,
-                                              },
-                                    ]}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                            )}
+                            <ListItemText
+                                className={cx('menu__item--name', isExpandMenu ? 'opacity-100' : 'opacity-0')}
+                                primary={'Setting'}
+                            />
+                        </ListItemButton>
+                    </ListItem>
                 </List>
+                <Divider />
             </Drawer>
         </>
     );

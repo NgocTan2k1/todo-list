@@ -3,7 +3,15 @@
 module.exports = {
     content: ['./src/**/*.{html,jsx,js,tsx,ts}'],
     theme: {
-        extend: {},
+        extend: {
+            justifyContent: {
+                initial: 'initial',
+            },
+            flex: {
+                0: '0',
+                full: '1',
+            },
+        },
     },
     plugins: [],
 };
