@@ -1,0 +1,10 @@
+.sign__in--form-control span,
+.sign__in--form-control div div input,
+.sign__in--form-control p {
+    font-size: 1.6rem !important;
+}
+
+.sign__in--form-control span svg {
+    width: 2.4rem;
+    height: 2.4rem;
+}

@@ -1,0 +1,10 @@
+.sign__up--form-control span,
+.sign__up--form-control div div input,
+.sign__up--form-control p {
+    font-size: 1.6rem !important;
+}
+
+.sign__up--form-control span svg {
+    width: 2.4rem;
+    height: 2.4rem;
+}

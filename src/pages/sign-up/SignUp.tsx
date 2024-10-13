@@ -18,13 +18,15 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 
 // The customized components
+import BaseNewPage from '../../components/layout/BasePage';
 // CSS
 import { styled } from '@mui/material/styles';
-import { useHandleNavigation } from '../../hooks/useHandleNavigation';
-import BaseNewPage from '../../components/layout/BasePage';
-
+import styles from './SignUp.module.css';
 // The stores
 // The customized hooks
+import { useHandleNavigation } from '../../hooks/useHandleNavigation';
+import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
+
 // The constants
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -61,6 +63,7 @@ export const loaderSignUpPage = async (): Promise<Response | string> => {
 const SignUp: React.FC = () => {
     // The hooks were customized
     const handleNavigation = useHandleNavigation();
+    const cx = useHandleBindingClass(styles);
 
     // state
     const [emailError, setEmailError] = useState(false);
@@ -191,6 +194,7 @@ const SignUp: React.FC = () => {
                 >
                     <Card variant="outlined">
                         <Typography
+                            className="!text-[36px]"
                             component="h1"
                             variant="h4"
                             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
@@ -198,8 +202,10 @@ const SignUp: React.FC = () => {
                             Sign up
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <FormControl>
-                                <FormLabel htmlFor="name">Full name</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="name">
+                                    Full name
+                                </FormLabel>
                                 <TextField
                                     autoComplete="name"
                                     name="name"
@@ -212,8 +218,10 @@ const SignUp: React.FC = () => {
                                     color={nameError ? 'error' : 'primary'}
                                 />
                             </FormControl>
-                            <FormControl>
-                                <FormLabel htmlFor="email">Email</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="email">
+                                    Email
+                                </FormLabel>
                                 <TextField
                                     required
                                     fullWidth
@@ -227,8 +235,10 @@ const SignUp: React.FC = () => {
                                     color={passwordError ? 'error' : 'primary'}
                                 />
                             </FormControl>
-                            <FormControl>
-                                <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="password">
+                                    Password
+                                </FormLabel>
                                 <TextField
                                     required
                                     fullWidth
@@ -243,8 +253,10 @@ const SignUp: React.FC = () => {
                                     color={passwordError ? 'error' : 'primary'}
                                 />
                             </FormControl>
-                            <FormControl>
-                                <FormLabel htmlFor="confirm-password">Confirm Password</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="confirm-password">
+                                    Confirm Password
+                                </FormLabel>
                                 <TextField
                                     required
                                     fullWidth
@@ -260,17 +272,24 @@ const SignUp: React.FC = () => {
                                 />
                             </FormControl>
                             <FormControlLabel
+                                className={cx('sign__up--form-control')}
                                 control={<Checkbox name="allowExtraEmails" color="primary" />}
                                 label="I want to receive updates via email."
                             />
-                            <Button type="submit" fullWidth variant="contained" onClick={validateInputs}>
+                            <Button
+                                className="!text-[1.4rem]"
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                onClick={validateInputs}
+                            >
                                 Sign up
                             </Button>
-                            <Typography sx={{ textAlign: 'center' }}>
+                            <Typography className="!text-[1.4rem]" sx={{ textAlign: 'center' }}>
                                 Already have an account?{' '}
                                 <span>
                                     <Link
-                                        className="cursor-pointer"
+                                        className="cursor-pointer !text-[1.4rem]"
                                         variant="body2"
                                         sx={{ alignSelf: 'center' }}
                                         onClick={() => {
