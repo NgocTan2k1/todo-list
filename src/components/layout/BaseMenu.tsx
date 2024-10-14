@@ -133,23 +133,21 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                 </DrawerHeader>
                 <Divider />
                 <List className={cx('menu__list', 'flex-full')}>
-                    {privateRoutes.map(
-                        (route, index) =>
+                    {privateRoutes.map((route, index) => {
+                        return (
                             route?.isMenu && (
-                                <ListItem
-                                    className={cx('menu__item', 'block', currentIndex === index && 'bg-[#E0E0E0]')}
-                                    onClick={() => {
-                                        handleNavigation(route.path);
-                                        setCurrentIndex(index);
-                                    }}
-                                    key={index}
-                                    disablePadding
-                                >
+                                <ListItem className={cx('menu__item', 'flex flex-col !justify-start')} key={index} disablePadding>
                                     <ListItemButton
+                                        onClick={() => {
+                                            handleNavigation(route.path);
+                                            setCurrentIndex(index);
+                                            console.log('parent:', typeof currentIndex);
+                                        }}
                                         className={cx(
                                             'menu__item--icon',
-                                            '!min-h-[48px] !px-[20px]',
+                                            '!min-h-[48px] !px-[20px] w-full',
                                             isExpandMenu ? '!justify-initial' : '!justify-center',
+                                            currentIndex === index && '!bg-[#E0E0E0]',
                                         )}
                                     >
                                         {!isExpandMenu ? (
@@ -202,9 +200,108 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                             primary={route.primaryText}
                                         />
                                     </ListItemButton>
+                                    {isExpandMenu && route?.children && (
+                                        <List className={cx('menu__list', 'flex-full w-full !ml-8')}>
+                                            {route?.children.map((child, childIndex) => {
+                                                return (
+                                                    <ListItem
+                                                        className={cx(
+                                                            'menu__item  !w-full',
+                                                            'block',
+                                                            currentIndex === Number(index + '.' + (childIndex + 1)) &&
+                                                                'bg-[#E0E0E0]',
+                                                        )}
+                                                        key={Number(index + '.' + (childIndex + 1))}
+                                                        disablePadding
+                                                    >
+                                                        <ListItemButton
+                                                            className={cx(
+                                                                'menu__item--icon',
+                                                                '!min-h-[48px] !px-[20px]  w-full',
+                                                                isExpandMenu ? '!justify-initial' : '!justify-center',
+                                                            )}
+                                                            onClick={() => {
+                                                                handleNavigation(route.path + child.path);
+                                                                setCurrentIndex(Number(index + '.' + (childIndex + 1)));
+                                                                console.log(typeof currentIndex);
+                                                            }}
+                                                        >
+                                                            <ListItemText
+                                                                className={cx(
+                                                                    'menu__item--name',
+                                                                    isExpandMenu ? 'opacity-100' : 'opacity-0',
+                                                                )}
+                                                                primary={child.primaryText}
+                                                            />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                );
+                                            })}
+                                        </List>
+                                    )}
+                                    {!isExpandMenu && route?.children && (
+                                        <List className={cx('menu__list', 'flex-full w-full')}>
+                                            {route?.children.map((child, childIndex) => {
+                                                return (
+                                                    <ListItem
+                                                        className={cx(
+                                                            'menu__item  !w-full',
+                                                            'block',
+                                                            currentIndex === Number(index + '.' + (childIndex + 1)) &&
+                                                                'bg-[#E0E0E0]',
+                                                        )}
+                                                        onClick={() => {
+                                                            handleNavigation(route.path + child.path);
+                                                            setCurrentIndex(Number(index + '.' + (childIndex + 1)));
+                                                        }}
+                                                        key={Number(index + '.' + (childIndex + 1))}
+                                                        disablePadding
+                                                    >
+                                                        <ListItemButton
+                                                            className={cx(
+                                                                'menu__item--icon',
+                                                                '!min-h-[48px] !px-[20px]  w-full',
+                                                                isExpandMenu ? '!justify-initial' : '!justify-center',
+                                                            )}
+                                                            onClick={() => {
+                                                                handleNavigation(route.path + child.path);
+                                                                setCurrentIndex(Number(index + '.' + (childIndex + 1)));
+                                                            }}
+                                                        >
+                                                            <Tooltip
+                                                                className={cx('menu__item--tooltip', '!text-[1.6rem]')}
+                                                                title={child.tooltipText}
+                                                                placement="right-end"
+                                                                arrow
+                                                            >
+                                                                <ListItemIcon
+                                                                    sx={[
+                                                                        {
+                                                                            minWidth: 0,
+                                                                            justifyContent: 'center',
+                                                                        },
+                                                                        isExpandMenu
+                                                                            ? {
+                                                                                  mr: 3,
+                                                                              }
+                                                                            : {
+                                                                                  mr: 'auto',
+                                                                              },
+                                                                    ]}
+                                                                >
+                                                                    {child?.IconMenu}
+                                                                </ListItemIcon>
+                                                            </Tooltip>
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                );
+                                            })}
+                                        </List>
+                                    )}
                                 </ListItem>
-                            ),
-                    )}
+                            )
+                        );
+                    })}
                 </List>
                 <Divider />
                 <List className={cx('menu__list', 'flex-0')}>

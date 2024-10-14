@@ -67,7 +67,17 @@ const App: React.FC = () => {
                 {isLogged && <BaseMenu />}
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <Routes>
-                        {routes?.map((route) => <Route key={route.id} path={route.path} Component={route.Component}></Route>)}
+                        {routes?.map((route) => {
+                            return (
+                                <>
+                                    <Route key={route.id} path={route.path} Component={route.Component} />
+                                    {route?.children &&
+                                        route?.children.map((child) => (
+                                            <Route key={child.id} path={route.path + child.path} Component={child.Component} />
+                                        ))}
+                                </>
+                            );
+                        })}
                     </Routes>
                 </Box>
             </Box>
