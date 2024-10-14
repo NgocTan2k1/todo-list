@@ -65,7 +65,7 @@ const App: React.FC = () => {
             {isLoading && <LinearIndeterminate />}
             <Box className="flex h-full">
                 {isLogged && <BaseMenu />}
-                <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
                     <Routes>
                         {routes?.map((route) => {
                             return (
