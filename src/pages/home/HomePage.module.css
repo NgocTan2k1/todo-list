@@ -1,2 +1,9 @@
 .wrapper__home-page {
 }
+
+.item__icon {
+    fill: #ffc400 !important;
+}
+.pagination ul {
+    justify-content: flex-end !important;
+}
