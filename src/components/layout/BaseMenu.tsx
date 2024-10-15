@@ -126,13 +126,6 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                     >
                         <MenuIcon />
                     </IconButton>
-                    {/* {isExpandMenu && <h3 className={cx('', 'text-[1.6rem] w-full text-center')}>Todo List Menu</h3>}
-                    <IconButton
-                        className={cx('menu__icon--collapse', 'h-full !rounded-none !text-[1.6rem]', !isExpandMenu && '!hidden')}
-                        onClick={handleDrawerClose}
-                    >
-                        {theme.direction === 'rtl' ? <ChevronRightIcon className={cx('h-full')} /> : <ChevronLeftIcon />}
-                    </IconButton> */}
                 </DrawerHeader>
                 <Divider />
                 <List className={cx('menu__list', 'flex-full')}>
@@ -175,7 +168,7 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                         />
                                     </ListItemButton>
                                     {route?.children && (
-                                        <List className={cx('menu__list', 'flex-full w-full')}>
+                                        <List className={cx('menu__list', 'flex-full w-full !py-0')}>
                                             {route?.children.map((child, childIndex) => {
                                                 return (
                                                     <ListItem
@@ -333,7 +326,7 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                             />
                                         </ListItemButton>
                                         {route?.children && (
-                                            <List className={cx('menu__list', 'flex-full w-full !ml-8')}>
+                                            <List className={cx('menu__list', 'flex-full w-full !ml-0')}>
                                                 {route?.children.map((child, childIndex) => {
                                                     return (
                                                         <ListItem
@@ -349,7 +342,7 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                                             <ListItemButton
                                                                 className={cx(
                                                                     'menu__item--icon',
-                                                                    '!min-h-[48px] !pl-[20px]  w-full !justify-initial',
+                                                                    '!min-h-[48px] !pl-[5.6rem]  w-full !justify-initial',
                                                                 )}
                                                                 onClick={() => {
                                                                     handleNavigation(route.path + child.path);
