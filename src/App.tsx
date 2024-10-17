@@ -61,11 +61,11 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="h-[100vh]">
+        <div className="w-full h-full">
             {isLoading && <LinearIndeterminate />}
-            <Box className="flex h-full">
+            <Box className="flex !max-h-full !max-w-full !h-full !w-full">
                 {isLogged && <BaseMenu />}
-                <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
+                <Box className="flex-full !max-h-full w-custom" component="main" sx={{ p: 0 }}>
                     <Routes>
                         {routes?.map((route) => {
                             return (

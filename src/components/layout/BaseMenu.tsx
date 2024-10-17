@@ -115,7 +115,12 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
 
     return (
         <>
-            <Drawer className={cx('wrapper__base-menu', 'flex')} variant="permanent" open={false} onClose={handleDrawerClose}>
+            <Drawer
+                className={cx('wrapper__base-menu', 'flex flex-0')}
+                variant="permanent"
+                open={false}
+                onClose={handleDrawerClose}
+            >
                 <DrawerHeader className={cx('menu__icons', '!justify-center')}>
                     <IconButton
                         className={cx('menu__icon--expand', '!m-0')}

@@ -6,11 +6,10 @@ import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
 
 // The customized components
 import BaseNewPage from '../../components/layout/BasePage';
+import BaseHeader from '../../components/layout/BaseHeader';
 
 // CSS
 import styles from './HomePage.module.css';
@@ -18,7 +17,6 @@ import styles from './HomePage.module.css';
 // The stores
 // The customized hooks
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
-import BaseHeader from '../../components/layout/BaseHeader';
 
 // The constants
 const HomePage: React.FC = () => {
@@ -27,9 +25,9 @@ const HomePage: React.FC = () => {
 
     const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 1, 1, 1, 1, 1, 1, 9, 2, 1, 2, 4, 5, 6, 3, 9, 9, 2, 1, 1, 5, 5, 4, 1, 2];
     return (
-        <BaseNewPage tailwindCSS={cx('wrapper__home-page', 'flex flex-col h-full w-full over overflow-hidden')}>
+        <BaseNewPage tailwindCSS={cx('wrapper__home-page', 'flex flex-col h-full ')}>
             <BaseHeader pageName="HomePage" />
-            <div className={cx('', 'flex-full overflow-y-auto px-2  ')}>
+            <div className={cx('', 'flex-full h-full overflow-y-auto px-2')}>
                 <Box
                     className={cx(
                         '',
@@ -50,9 +48,6 @@ const HomePage: React.FC = () => {
                         </Paper>
                     ))}
                 </Box>
-                <Stack spacing={2}>
-                    <Pagination className={cx('pagination', '!m-4')} count={5} showFirstButton showLastButton />
-                </Stack>
             </div>
         </BaseNewPage>
     );

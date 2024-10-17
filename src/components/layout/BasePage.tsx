@@ -14,7 +14,7 @@ export interface IBaseNewPage {
 }
 
 const BaseNewPage: React.FC<IBaseNewPage> = ({ tailwindCSS, children }) => {
-    return <div className={`h-full overflow-hidden bg-[#F9F9F9] ${tailwindCSS}`}> {children}</div>;
+    return <div className={`overflow-hidden bg-[#F9F9F9] ${tailwindCSS}`}> {children}</div>;
 };
 
 export default BaseNewPage;
