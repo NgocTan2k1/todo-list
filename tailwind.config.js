@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
 module.exports = {
+    // mode: 'jit',
     content: ['./src/**/*.{html,jsx,js,tsx,ts}'],
     theme: {
         extend: {
@@ -14,11 +15,17 @@ module.exports = {
             backgroundImage: {
                 'custom-gradient': 'linear-gradient(45deg, #ff6ec4, #7873f5, #36d1dc, #5b86e5)',
             },
-            maxWidth: {
-                custom: 'calc(100% - 57px)',
+            fontWeight: {
+                normal: '400',
             },
-            width: {
-                custom: 'calc(100% - 57px)',
+            fontSize: {
+                normal: '1.6rem',
+            },
+            colors: {
+                pending: '#FBFF00',
+                done: '#49FF00',
+                fail: '#FF0000',
+                important: '#FF9300',
             },
         },
     },

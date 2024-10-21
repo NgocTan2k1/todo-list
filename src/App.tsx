@@ -63,21 +63,28 @@ const App: React.FC = () => {
     return (
         <div className="w-full h-full">
             {isLoading && <LinearIndeterminate />}
-            <Box className="flex !max-h-full !max-w-full !h-full !w-full">
+            <Box key={'wrapper'} className="flex !max-h-full !max-w-full !h-full !w-full">
                 {isLogged && <BaseMenu />}
-                <Box className="flex-full !max-h-full w-custom" component="main" sx={{ p: 0 }}>
+                <Box key={'item'} className="flex-full !max-h-full w-[calc(100%-57px)]" component="main" sx={{ p: 0 }}>
                     <Routes>
-                        {routes?.map((route) => {
+                        {routes?.map((route, index) => {
+                            return <Route key={index + '-0'} path={route.path} Component={route.Component} />;
+                        })}
+
+                        {routes?.map((route, index) => {
                             return (
-                                <>
-                                    <Route key={route.id} path={route.path} Component={route.Component} />
-                                    {route?.children &&
-                                        route?.children.map((child) => (
-                                            <Route key={child.id} path={route.path + child.path} Component={child.Component} />
-                                        ))}
-                                </>
+                                route?.children &&
+                                route?.children.map((child, childIndex) => (
+                                    <Route
+                                        key={index + '-' + childIndex}
+                                        path={route.path + child.path}
+                                        Component={child.Component}
+                                    />
+                                ))
                             );
                         })}
+
+                        {}
                     </Routes>
                 </Box>
             </Box>

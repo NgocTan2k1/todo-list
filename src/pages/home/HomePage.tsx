@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // firebase
 // The components
@@ -17,13 +17,45 @@ import styles from './HomePage.module.css';
 // The stores
 // The customized hooks
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
+import ProjectItem from './components/ProjectItem';
 
 // The constants
+
 const HomePage: React.FC = () => {
     // The customized hooks
     const cx = useHandleBindingClass(styles);
 
-    const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 1, 1, 1, 1, 1, 1, 9, 2, 1, 2, 4, 5, 6, 3, 9, 9, 2, 1, 1, 5, 5, 4, 1, 2];
+    const [array, setArray] = useState([
+        {
+            projectName: 'ProjectName1',
+            status: 'pending',
+            startDate: '2024/09/01',
+            endDate: undefined,
+            projectManager: 'Tanpn',
+        },
+        {
+            projectName: 'ProjectName1',
+            status: 'done',
+            startDate: '2024/09/01',
+            endDate: '2024/20/10',
+            projectManager: 'Tanpn',
+        },
+        {
+            projectName: 'ProjectName1',
+            status: 'onprogress',
+            startDate: '2024/09/01',
+            endDate: undefined,
+            projectManager: 'Tanpn',
+        },
+        {
+            projectName: 'ProjectName1',
+            status: 'fail',
+            startDate: '2024/09/01',
+            endDate: '2024/09/10',
+            projectManager: 'Tanpn',
+        },
+    ]);
+    console.log(array);
     return (
         <BaseNewPage tailwindCSS={cx('wrapper__home-page', 'flex flex-col h-full ')}>
             <BaseHeader pageName="HomePage" />
@@ -32,20 +64,44 @@ const HomePage: React.FC = () => {
                     className={cx(
                         '',
                         'flex flex-wrap sm:w-[28rem] max-[639px]:w-[24rem] md:w-[59rem] lg:w-[90rem] 2xl:w-[121rem] min-[1660px]:w-[152rem] h-auto sm:justify-center md:justify-start gap-x-12 gap-y-12 my-4 mx-auto',
+                        'max-[639px]:!min-w-[24rem] max-[639px]:!min-h-[20rem]',
                     )}
                 >
-                    {array.map((_, index) => (
-                        <Paper
+                    <Paper
+                        key={0}
+                        component={Button}
+                        className={cx(
+                            '',
+                            '!min-w-[28rem] !min-h-[24rem] !max-w-[28rem] !max-h-[24rem] !rounded-3xl hover:bg-neutral-100',
+                            'max-[639px]:!min-w-[24rem] max-[640px]:!min-h-[20rem] ',
+                        )}
+                        elevation={3}
+                        onClick={() =>
+                            setArray((prev) => {
+                                return [
+                                    ...prev,
+                                    {
+                                        projectName: 'ProjectName1',
+                                        status: 'pending',
+                                        startDate: '2024/09/01',
+                                        endDate: undefined,
+                                        projectManager: 'Tanpn',
+                                    },
+                                ];
+                            })
+                        }
+                    >
+                        <AddCircleOutlineIcon className={cx('item__icon', '!w-[4rem] !h-[4rem]')} />
+                    </Paper>
+                    {array.map((project, index) => (
+                        <ProjectItem
                             key={index}
-                            component={Button}
-                            className={cx(
-                                '',
-                                'max-[639px]:!min-w-[24rem] max-[640px]:!min-h-[20rem] !min-w-[28rem] !min-h-[26rem] !rounded-3xl hover:bg-neutral-100',
-                            )}
-                            elevation={3}
-                        >
-                            <AddCircleOutlineIcon className={cx('item__icon', '!w-[4rem] !h-[4rem]')} />
-                        </Paper>
+                            projectName={project.projectName}
+                            status={project.status}
+                            startDate={project.startDate}
+                            endDate={project.endDate}
+                            projectManager={project.projectManager}
+                        />
                     ))}
                 </Box>
             </div>

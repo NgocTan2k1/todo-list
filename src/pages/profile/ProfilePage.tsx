@@ -9,6 +9,9 @@ import { firebaseApp } from '../../firebase';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+
 // The customized components
 import BaseNewPage from '../../components/layout/BasePage';
 import BaseHeader from '../../components/layout/BaseHeader';
@@ -36,19 +39,15 @@ const ProfilePage: React.FC = () => {
             <div
                 className={cx(
                     'content__profile',
-                    'flex flex-full !max-w-full !overflow-hidden bg-white shadow-xl rounded-xl mx-[2.4rem] mb-[2.4rem]',
+                    'flex-full !max-w-full !overflow-hidden bg-white shadow-xl rounded-xl mx-[2.4rem] mb-[2.4rem]',
                     'max-[639px]:mx-[1.2rem] max-[639px]:mb-[1.2rem]',
                 )}
             >
-                <div className={cx('', 'max-[599px]:hidden !bg-custom-gradient h-[3.6rem]')}></div>
-                <Box className={cx('', 'flex flex-full w-full h-full')}>
-                    <Grid
-                        className={cx('', '!flex !items-start !max-h-fit !w-full overflow-hidden !gap-0 !ml-0 !mt-0')}
-                        container
-                        spacing={2}
-                    >
+                <div className={cx('', 'max-[600px]:hidden !bg-custom-gradient !w-full h-[3.6rem]')}></div>
+                <Box className={cx('', 'flex flex-full w-full')}>
+                    <Grid className={cx('', '!flex !items-start !max-h-fit !w-full !gap-0 !ml-0 !mt-0')} container spacing={2}>
                         <Grid
-                            className={cx('', 'flex justify-center !h-fit items-center p-[1.6rem]')}
+                            className={cx('', 'relative flex justify-center !h-fit items-center p-[1.6rem]')}
                             item
                             xs={12}
                             sm={4}
@@ -63,9 +62,18 @@ const ProfilePage: React.FC = () => {
                                 )}
                                 src={avatar}
                             />
+                            <Stack
+                                className={cx('', 'absolute bottom-[-1.6rem] right-[50%] translate-x-[50%]', '')}
+                                spacing={2}
+                                direction="row"
+                            >
+                                <Button className={cx('', 'text-[1.4rem] !font-bold')} variant="outlined" color="error">
+                                    Edit
+                                </Button>
+                            </Stack>
                         </Grid>
 
-                        <Grid className={cx('', 'p-[1.6rem] max-w-full overflow-hidden')} item xs={12} sm={8} md={7} xl={8}>
+                        <Grid className={cx('', 'p-[1.6rem] max-w-full max-h-fit')} item xs={12} sm={8} md={7} xl={8}>
                             <Grid
                                 className={cx(
                                     '',
@@ -75,39 +83,116 @@ const ProfilePage: React.FC = () => {
                                 container
                                 spacing={2}
                             >
-                                <Grid className={cx('', 'flex !p-0 items-end gap-3 max-h-fit')} item xs={12}>
-                                    <div className={cx('', 'flex justify-between min-w-[6.4rem]')}>
-                                        <strong className={cx('', '!text-[1.8rem] text-left')}>Name</strong>
-                                        <strong className={cx('', '!text-[1.8rem] ')}>:</strong>
-                                    </div>
-                                    <p className={cx('', 'text-[1.6rem] ')}>Pham Ngoc Tan</p>
-                                </Grid>
-                                <Grid className={cx('', 'flex !p-0 items-end gap-3 max-h-fit')} item xs={12}>
-                                    <div className={cx('', 'flex justify-between min-w-[6.4rem]')}>
-                                        <strong className={cx('', '!text-[1.8rem] text-left')}>Age</strong>
-                                        <strong className={cx('', '!text-[1.8rem] ')}>:</strong>
-                                    </div>
-                                    <p className={cx('', 'text-[1.6rem] ')}>18</p>
-                                </Grid>
                                 <Grid
-                                    className={cx('', 'flex !w-full !p-0 items-end gap-3 max-h-fit overflow-hidden')}
+                                    className={cx(
+                                        '',
+                                        'flex !p-0 items-center gap-3 !max-w-full !h-full !max-h-fit overflow-hidden',
+                                    )}
                                     item
                                     xs={12}
                                 >
-                                    <div className={cx('', 'flex justify-between min-w-[6.4rem]')}>
-                                        <strong className={cx('', '!text-[1.8rem] text-left')}>E-mail</strong>
-                                        <strong className={cx('', '!text-[1.8rem] ')}>:</strong>
+                                    <div
+                                        className={cx(
+                                            '',
+                                            'flex justify-between items-center !h-full !min-w-[6.4rem]',
+                                            'max-[639px]:!min-w-[5.8rem]',
+                                        )}
+                                    >
+                                        <strong className={cx('', 'text-[1.8rem] text-left', 'max-[639px]:!text-[1.6rem]')}>
+                                            Name
+                                        </strong>
+                                        <strong className={cx('', 'text-[1.8rem]', 'max-[639px]:!text-[1.6rem]')}>:</strong>
                                     </div>
-                                    <p className={cx('', 'flex-1 text-[1.6rem] max-w-full break-words')}>
-                                        phamngoctan2016@gmail.com1234567890123123123123
+                                    <p
+                                        className={cx(
+                                            '',
+                                            'flex-full text-[1.6rem] max-w-[calc(100%-6.4rem-0.75rem)] overflow-hidden text-ellipsis whitespace-nowrap',
+                                            'max-[639px]:!text-[1.2rem] max-[639px]:max-w-[calc(100%-5.8rem-0.75rem)] max-[639px]:!leading-[1.2rem]',
+                                        )}
+                                    >
+                                        Phạm Ngọc Tân
                                     </p>
                                 </Grid>
-                                <Grid className={cx('', 'flex !p-0 items-end gap-3 max-h-fit')} item xs={12}>
-                                    <div className={cx('', 'flex justify-between min-w-[6.4rem]')}>
-                                        <strong className={cx('', '!text-[1.8rem] text-left')}>Phone</strong>
-                                        <strong className={cx('', '!text-[1.8rem] ')}>:</strong>
+                                <Grid
+                                    className={cx('', 'flex !p-0 items-center gap-3 !max-w-full !max-h-fit overflow-hidden')}
+                                    item
+                                    xs={12}
+                                >
+                                    <div
+                                        className={cx(
+                                            '',
+                                            'flex justify-between items-center !h-full !min-w-[6.4rem]',
+                                            'max-[639px]:!min-w-[5.8rem]',
+                                        )}
+                                    >
+                                        <strong className={cx('', 'text-[1.8rem] text-left', 'max-[639px]:!text-[1.6rem]')}>
+                                            Age
+                                        </strong>
+                                        <strong className={cx('', 'text-[1.8rem]', 'max-[639px]:!text-[1.6rem]')}>:</strong>
                                     </div>
-                                    <p className={cx('', 'text-[1.6rem] ')}>0386158494</p>
+                                    <p
+                                        className={cx(
+                                            '',
+                                            'flex-full text-[1.6rem] max-w-[calc(100%-6.4rem-0.75rem)] overflow-hidden text-ellipsis whitespace-nowrap',
+                                            'max-[639px]:!text-[1.2rem] max-[639px]:max-w-[calc(100%-5.8rem-0.75rem)] max-[639px]:!leading-[1.2rem]',
+                                        )}
+                                    >
+                                        18
+                                    </p>
+                                </Grid>
+                                <Grid
+                                    className={cx('', 'flex !p-0 items-center gap-3 !max-w-full !max-h-fit overflow-hidden')}
+                                    item
+                                    xs={12}
+                                >
+                                    <div
+                                        className={cx(
+                                            '',
+                                            'flex justify-between items-center !h-full !min-w-[6.4rem]',
+                                            'max-[639px]:!min-w-[5.8rem]',
+                                        )}
+                                    >
+                                        <strong className={cx('', 'text-[1.8rem] text-left', 'max-[639px]:!text-[1.6rem]')}>
+                                            E-mail
+                                        </strong>
+                                        <strong className={cx('', 'text-[1.8rem]', 'max-[639px]:!text-[1.6rem]')}>:</strong>
+                                    </div>
+                                    <p
+                                        className={cx(
+                                            '',
+                                            'flex-full text-[1.6rem] max-w-[calc(100%-6.4rem-0.75rem)] overflow-hidden text-ellipsis whitespace-nowrap',
+                                            'max-[639px]:!text-[1.2rem] max-[639px]:max-w-[calc(100%-5.8rem-0.75rem)] max-[639px]:!leading-[1.2rem]',
+                                        )}
+                                    >
+                                        phamngoctan2016@gmail.com.vn
+                                    </p>
+                                </Grid>
+                                <Grid
+                                    className={cx('', 'flex !p-0 items-center gap-3 !max-w-full !max-h-fit overflow-hidden')}
+                                    item
+                                    xs={12}
+                                >
+                                    <div
+                                        className={cx(
+                                            '',
+                                            'flex justify-between items-center !h-full !min-w-[6.4rem]',
+                                            'max-[639px]:!min-w-[5.8rem]',
+                                        )}
+                                    >
+                                        <strong className={cx('', 'text-[1.8rem] text-left', 'max-[639px]:!text-[1.6rem]')}>
+                                            Phone
+                                        </strong>
+                                        <strong className={cx('', 'text-[1.8rem]', 'max-[639px]:!text-[1.6rem]')}>:</strong>
+                                    </div>
+                                    <p
+                                        className={cx(
+                                            '',
+                                            'flex-full text-[1.6rem] max-w-[calc(100%-6.4rem-0.75rem)] overflow-hidden text-ellipsis whitespace-nowrap',
+                                            'max-[639px]:!text-[1.2rem] max-[639px]:max-w-[calc(100%-5.8rem-0.75rem)] max-[639px]:!leading-[1.2rem]',
+                                        )}
+                                    >
+                                        0386158494
+                                    </p>
                                 </Grid>
                             </Grid>
                         </Grid>
