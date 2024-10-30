@@ -14,6 +14,8 @@ import CircularIndeterminate from './components/loading/circular-loading/Circula
 import BaseMenu from './components/layout/BaseMenu';
 
 // CSS
+import './assets/styles/App.css';
+
 // The stores
 import useAuthenticationStores from './stores/authenticationStores';
 import useCommonStores from './stores/commonStores';
@@ -65,7 +67,19 @@ const App: React.FC = () => {
             {isLoading && <LinearIndeterminate />}
             <Box key={'wrapper'} className="flex !max-h-full !max-w-full !h-full !w-full">
                 {isLogged && <BaseMenu />}
-                <Box key={'item'} className="flex-full !max-h-full w-[calc(100%-57px)]" component="main" sx={{ p: 0 }}>
+                <Box
+                    key={'item'}
+                    className="flex-full !max-h-full w-[calc(100%-57px)] overflow-hidden"
+                    component="main"
+                    sx={{ p: 0 }}
+                >
+                    {/* <div
+                        className={`${isClipPath ? 'top--in' : ''} ${!isClipPath ? 'top--out' : ''} z-[999] w-full h-[50%] bg-slate-600`}
+                    ></div>
+                    <div
+                        className={`${isClipPath ? 'bot--in' : ''} ${!isClipPath ? 'bot--out' : ''} z-[999] w-full h-[50%] bg-[blue]`}
+                    ></div> */}
+
                     <Routes>
                         {routes?.map((route, index) => {
                             return <Route key={index + '-0'} path={route.path} Component={route.Component} />;

@@ -19,7 +19,7 @@ export interface IProjectItem {
     key: string | number;
     status: string;
     projectName: string;
-    startDate: string;
+    startDate: string | undefined;
     endDate: string | undefined;
     projectManager: string;
 }

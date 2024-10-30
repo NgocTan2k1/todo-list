@@ -1,16 +1,3 @@
-.wrapper__home-page {
-}
-
-.item__icon {
-    fill: #ffc400 !important;
-}
-.modal__add-project div div {
-    width: 70%;
-    /* min-width: 300px; */
-}
-.modal__add-project div div div {
-    width: 100%;
-}
 .input__item input,
 .input__item label,
 .group__date label,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // firebase
 import { getAuth } from 'firebase/auth';
@@ -32,6 +32,13 @@ const ProfilePage: React.FC = () => {
     // firebase
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const auth = getAuth(firebaseApp);
+
+    // effects
+    useEffect(() => {
+        return () => {
+            console.log('===== Unmouted ProfilePage.tsx component =====');
+        };
+    }, []);
 
     return (
         <BaseNewPage tailwindCSS={cx('wrapper__profile-page', 'flex flex-col !h-full')}>

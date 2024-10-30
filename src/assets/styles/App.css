@@ -1,0 +1,46 @@
+/* .top--in {
+    position: absolute;
+    animation: topIn 2s ease-in-out forwards;
+}
+.top--out {
+    position: absolute;
+    animation: topIn 2s ease-in-out reverse forwards;
+}
+.bot--in {
+    position: absolute;
+    animation: botIn 2s ease-in-out forwards;
+}
+.bot--out {
+    position: absolute;
+    animation: botIn 2s ease-in-out reverse forwards;
+}
+
+@keyframes topIn {
+    0% {
+        transition: all;
+        top: -60%;
+    }
+    50% {
+        transition: all;
+        top: -30%;
+    }
+    100% {
+        transition: all;
+        top: 0%;
+    }
+}
+
+@keyframes botIn {
+    0% {
+        transition: all;
+        top: 110%;
+    }
+    50% {
+        transition: all;
+        top: 80%;
+    }
+    100% {
+        transition: all;
+        top: 50%;
+    }
+} */

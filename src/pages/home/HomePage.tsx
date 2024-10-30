@@ -1,31 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // firebase
 // The components
-import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Button from '@mui/material/Button';
 
 // The customized components
 import BaseNewPage from '../../components/layout/BasePage';
 import BaseHeader from '../../components/layout/BaseHeader';
+import ProjectItem from './components/ProjectItem';
 
 // CSS
 import styles from './HomePage.module.css';
 
 // The stores
+
 // The customized hooks
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
-import ProjectItem from './components/ProjectItem';
+import ProjectCreatingModal from '../../components/modal/ProjectCreatingModal';
 
 // The constants
+
+// The interfaces
+export interface IValidation {
+    [key: string]: {
+        isError: boolean;
+        errorMessage: string;
+    };
+}
+export interface Project {
+    projectName: string;
+    status: string;
+    startDate: string | undefined;
+    endDate: string | undefined;
+    projectManager: string;
+}
 
 const HomePage: React.FC = () => {
     // The customized hooks
     const cx = useHandleBindingClass(styles);
 
-    const [array, setArray] = useState([
+    // states
+    const [isProjectCreatingModal, setIsProjectCreatingModal] = useState(false);
+    const timeoutId = useRef<any>();
+
+    // const projectNameRef = useRef('');
+    // const startDateRef = useRef<Dayjs | null>(null);
+    // const endDateRef = useRef<Dayjs | null>(null);
+    // const validateRef = useRef<IValidation>({});
+    const [array, setArray] = useState<Project[]>([
         {
             projectName: 'ProjectName1',
             status: 'pending',
@@ -55,10 +80,28 @@ const HomePage: React.FC = () => {
             projectManager: 'Tanpn',
         },
     ]);
-    console.log(array);
+
+    // effect
+    useEffect(() => {
+        return () => {
+            console.log('===== Unmouted HomePage.tsx component =====');
+            clearTimeout(timeoutId.current);
+        };
+    }, []);
+
+    // functions
+    const handleShowProject = (project: Project | undefined) => {
+        if (project !== undefined) {
+            setArray((prevProjects) => [...prevProjects, project]);
+        }
+
+        setIsProjectCreatingModal(false);
+    };
+
     return (
         <BaseNewPage tailwindCSS={cx('wrapper__home-page', 'flex flex-col h-full ')}>
             <BaseHeader pageName="HomePage" />
+            <ProjectCreatingModal isOpen={isProjectCreatingModal} onClose={handleShowProject} />
             <div className={cx('', 'flex-full h-full overflow-y-auto px-2')}>
                 <Box
                     className={cx(
@@ -76,20 +119,7 @@ const HomePage: React.FC = () => {
                             'max-[639px]:!min-w-[24rem] max-[640px]:!min-h-[20rem] ',
                         )}
                         elevation={3}
-                        onClick={() =>
-                            setArray((prev) => {
-                                return [
-                                    ...prev,
-                                    {
-                                        projectName: 'ProjectName1',
-                                        status: 'pending',
-                                        startDate: '2024/09/01',
-                                        endDate: undefined,
-                                        projectManager: 'Tanpn',
-                                    },
-                                ];
-                            })
-                        }
+                        onClick={() => setIsProjectCreatingModal(true)}
                     >
                         <AddCircleOutlineIcon className={cx('item__icon', '!w-[4rem] !h-[4rem]')} />
                     </Paper>
