@@ -50,11 +50,11 @@ const ProfilePage: React.FC = () => {
                     'max-[639px]:mx-[1.2rem] max-[639px]:mb-[1.2rem]',
                 )}
             >
-                <div className={cx('', 'max-[600px]:hidden !bg-custom-gradient !w-full h-[3.6rem]')}></div>
-                <Box className={cx('', 'flex flex-full w-full')}>
+                <div className={cx('', 'max-[600px]:hidden !bg-custom-gradient !w-full h-[4.2rem]')}></div>
+                <Box className={cx('', 'flex w-full')}>
                     <Grid className={cx('', '!flex !items-start !max-h-fit !w-full !gap-0 !ml-0 !mt-0')} container spacing={2}>
                         <Grid
-                            className={cx('', 'relative flex justify-center !h-fit items-center p-[1.6rem]')}
+                            className={cx('', 'relative flex justify-center !flex-col gap-2 !h-fit items-center p-[1.6rem]')}
                             item
                             xs={12}
                             sm={4}
@@ -67,14 +67,10 @@ const ProfilePage: React.FC = () => {
                                     '!min-h-[15.2rem] !min-w-[15.2rem] !h-auto !w-[60%] aspect-square',
                                     'max-[599px]:!w-[80%] max-[599px]:!h-auto',
                                 )}
-                                src={avatar}
+                                src={avatar && '/src/assets/img/thumbnail.jpg'}
                             />
-                            <Stack
-                                className={cx('', 'absolute bottom-[-1.6rem] right-[50%] translate-x-[50%]', '')}
-                                spacing={2}
-                                direction="row"
-                            >
-                                <Button className={cx('', 'text-[1.4rem] !font-bold')} variant="outlined" color="error">
+                            <Stack className={cx('', '', '')} spacing={2} direction="row">
+                                <Button className={cx('', '!text-[1.4rem] !font-bold')} variant="outlined" color="error">
                                     Edit
                                 </Button>
                             </Stack>
@@ -205,6 +201,7 @@ const ProfilePage: React.FC = () => {
                         </Grid>
                     </Grid>
                 </Box>
+                <Box className={cx('', 'flex flex-full w-full')}></Box>
             </div>
         </BaseNewPage>
     );

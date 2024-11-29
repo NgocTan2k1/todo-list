@@ -16,20 +16,18 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import KeyboardBackspaceRoundedIcon from '@mui/icons-material/KeyboardBackspaceRounded';
 
 // The customized components
-
 // CSS
 import styles from './ProjectCreatingModal.module.css';
 
 // The stores
-
 // The customized hooks
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
 
 // The constants
-
 // The interfaces
 import { Project } from '../../pages/home/HomePage';
 
+// The globals
 export interface IValidation {
     [key: string]: {
         isError: boolean;
@@ -101,12 +99,8 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
             }));
             isValid = true;
         }
-        console.log(startDate);
-        console.log(startDate?.toString());
-        console.log(startDate?.toJSON());
-        console.log(startDate?.toISOString());
 
-        if (endDate !== null && startDate !== null && endDate <= startDate) {
+        if (endDate !== null && startDate !== null && endDate < startDate) {
             setValidate((prevValidate) => ({
                 ...prevValidate,
                 startDate: {
@@ -176,7 +170,7 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
             aria-describedby="alert-dialog-description"
             className={cx('modal__add-project', '!min-w-[40%]')}
         >
-            <DialogTitle id="alert-dialog-title" className={cx('modal__title', '!text-normal !pb-0')}>
+            <DialogTitle id="alert-dialog-title" className={cx('modal__title', '!text-[1.8rem] !pb-0')}>
                 Create A New Project
             </DialogTitle>
             <DialogContent className={cx('modal__content', '!text-normal !py-[24px]')}>
@@ -211,7 +205,7 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
                                 label="Start Date *"
                                 disablePast
                                 className={cx(
-                                    'date__item ',
+                                    'date__item',
                                     '!text-normal !w-fit',
                                     'max-[785px]:!w-full !border-rose-600',
                                     validate?.startDate?.isError && 'g__date__item--error',
@@ -225,8 +219,8 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
                                             errorMessage: '',
                                         },
                                         endDate: {
-                                            isError: validate?.date?.isError && false,
-                                            errorMessage: '',
+                                            isError: validate?.date?.isError ? false : validate?.endDate?.isError ? true : false,
+                                            errorMessage: validate?.endDate?.isError ? validate?.endDate?.errorMessage : '',
                                         },
                                         date: {
                                             isError: false,
@@ -264,8 +258,12 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
                                     setValidate({
                                         ...validate,
                                         startDate: {
-                                            isError: validate?.date?.isError && false,
-                                            errorMessage: '',
+                                            isError: validate?.date?.isError
+                                                ? false
+                                                : validate?.startDate?.isError
+                                                  ? true
+                                                  : false,
+                                            errorMessage: validate?.startDate?.isError ? validate?.startDate?.errorMessage : '',
                                         },
                                         endDate: {
                                             isError: false,
@@ -314,6 +312,7 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
                 </Button>
                 <LoadingButton
                     className={cx('button__item', '')}
+                    disabled={Object.keys(validate)?.some((key) => validate[key]?.isError === true)}
                     loading={isLoadingCreateNewProject}
                     variant="contained"
                     onClick={handleCreateNewProject}
