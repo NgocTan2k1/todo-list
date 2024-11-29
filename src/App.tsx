@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { type IRoute, privateRoutes, publicRoutes } from './routers/routes';
+
 // firebase
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { firebaseApp } from './firebase';
@@ -27,9 +28,15 @@ const App: React.FC = () => {
     // firebase
     const auth = getAuth(firebaseApp);
 
+    // the hooks customized
+
     // stores
+    // authentication stores
     const isLogged = useAuthenticationStores((state) => state.isLogged);
     const setIsLogged = useAuthenticationStores((state) => state.setIsLogged);
+    const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
+    const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    // common stores
     const isLoading = useCommonStores((state) => state.isLoading);
     const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
@@ -40,6 +47,7 @@ const App: React.FC = () => {
     useEffect(() => {
         setIsLoading(false);
         onAuthStateChanged(auth, (user) => {
+            setIsLoadingUser(true);
             if (user) {
                 setIsLogged(true);
                 setRoutes(privateRoutes);
@@ -47,16 +55,16 @@ const App: React.FC = () => {
                 setIsLogged(false);
                 setRoutes(publicRoutes);
             }
+            setIsLoadingUser(false);
         });
-
         return () => {
             console.log('===== Unmouted App.tsx component =====');
         };
-    }, [isLogged]);
+    }, []);
 
-    if (routes.length === 0) {
+    if (routes.length === 0 || isLoadingUser) {
         return (
-            <div className="flex h-[100vh] w-full items-center justify-center z-[9999] ">
+            <div className="flex h-[100vh] w-full items-center justify-center z-[99999] ">
                 <CircularIndeterminate />
             </div>
         );
@@ -97,8 +105,6 @@ const App: React.FC = () => {
                                 ))
                             );
                         })}
-
-                        {}
                     </Routes>
                 </Box>
             </Box>

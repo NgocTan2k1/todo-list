@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { privateRoutes } from '../../routers/routes';
 
 // firebase
+import { getAuth, signOut } from 'firebase/auth';
+import { firebaseApp } from '../../firebase';
+
 // The components
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
@@ -92,6 +94,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const BaseMenu: React.FC<IBaseMenu> = () => {
+    //firebase
+    const auth = getAuth(firebaseApp);
+
     // The hooks were customized
     const cx = useHandleBindingClass(styles);
     const handleNavigation = useHandleNavigation();
@@ -150,10 +155,11 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                         )}
                                     >
                                         <Tooltip
-                                            className={cx('menu__item--tooltip', '!text-[1.6rem]')}
+                                            classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
                                             title={route.tooltipText}
                                             placement="right-end"
                                             arrow
+                                            leaveDelay={100}
                                         >
                                             <ListItemIcon
                                                 sx={[
@@ -201,10 +207,11 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                                             }}
                                                         >
                                                             <Tooltip
-                                                                className={cx('menu__item--tooltip', '!text-[1.6rem]')}
+                                                                classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
                                                                 title={child.tooltipText}
                                                                 placement="right-end"
                                                                 arrow
+                                                                leaveDelay={100}
                                                             >
                                                                 <ListItemIcon
                                                                     sx={[
@@ -234,17 +241,20 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                     <ListItem
                         className={cx('menu__item', 'block', currentIndex === 9999 && 'bg[#E0E0E0]')}
                         onClick={() => {
-                            handleNavigation('/setting');
+                            // handleNavigation('/setting');
+                            signOut(auth);
+                            handleNavigation('/sign-in');
                             setCurrentIndex(9999);
                         }}
                         disablePadding
                     >
                         <ListItemButton className={cx('menu__item--icon', '!min-h-[48px] !px-[20px] !justify-center')}>
                             <Tooltip
-                                className={cx('menu__item--tooltip', '!text-[1.6rem]')}
+                                classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
                                 title={'Setting'}
                                 placement="right-end"
                                 arrow
+                                leaveDelay={100}
                             >
                                 <ListItemIcon
                                     sx={[
@@ -405,10 +415,11 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                             >
                                 {!isExpandMenu ? (
                                     <Tooltip
-                                        className={cx('menu__item--tooltip', '!text-[1.6rem]')}
+                                        classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
                                         title={'Setting'}
                                         placement="right-end"
                                         arrow
+                                        leaveDelay={100}
                                     >
                                         <ListItemIcon
                                             sx={[

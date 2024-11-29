@@ -93,7 +93,7 @@ const SignIn: React.FC = () => {
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
     const [isForgotPasswordModal, setIsForgotPasswordModal] = useState(false);
-    const [isNoticeModal, setIsNoticeModal] = useState(true);
+    const [isNoticeModal, setIsNoticeModal] = useState(false);
 
     // effects
     useEffect(() => {
@@ -126,7 +126,6 @@ const SignIn: React.FC = () => {
         if (email && password) {
             try {
                 const auth = getAuth(firebaseApp);
-
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 setUserCredential(userCredential);
                 setIsLogged(true);

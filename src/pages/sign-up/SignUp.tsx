@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 
 // firebase
-// import { firebaseApp } from '../../firebase';
+import { firebaseApp } from '../../firebase';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
 // The components
 import Box from '@mui/material/Box';
@@ -22,12 +23,18 @@ import BaseNewPage from '../../components/layout/BasePage';
 // CSS
 import { styled } from '@mui/material/styles';
 import styles from './SignUp.module.css';
+
 // The stores
+import useAuthenticationStores from '../../stores/authenticationStores';
+import useCommonStores from '../../stores/commonStores';
+
 // The customized hooks
 import { useHandleNavigation } from '../../hooks/useHandleNavigation';
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
 
 // The constants
+// The interfaces
+import { UserModal } from '../../modals/User';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -64,6 +71,12 @@ const SignUp: React.FC = () => {
     // The hooks were customized
     const handleNavigation = useHandleNavigation();
     const cx = useHandleBindingClass(styles);
+
+    // stores
+    // authentication stores
+    const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    // common stores
+    const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
     // state
     const [emailError, setEmailError] = useState(false);
@@ -136,6 +149,7 @@ const SignUp: React.FC = () => {
      * @returns
      */
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        setIsLoading(true);
         event.preventDefault();
         if (emailError || passwordError || confirmPasswordError || nameError) {
             return;
@@ -143,20 +157,31 @@ const SignUp: React.FC = () => {
 
         const data = new FormData(event.currentTarget);
         const email = String(data.get('email'));
-        // const name = String(data.get('name'));
+        const name = String(data.get('name'));
         const password = String(data.get('password'));
         // const allowExtraEmails = String(data.get('allowExtraEmails'));
 
         try {
             const auth = getAuth();
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            console.log('userCredential:', userCredential);
-            console.log('user:', userCredential.user);
 
             // save user in database
+            const newUser: UserModal = {
+                userId: userCredential.user.uid,
+                username: name,
+                role: 2,
+                createAt: new Date(),
+                updateAt: '',
+                members: [],
+                deleteFlag: 0,
+            };
+            const db = await getFirestore(firebaseApp);
+            await addDoc(collection(db, 'users'), newUser);
 
-            // redirect /sign-in
-            handleNavigation('/sign-in');
+            // redirect /home
+            console.log('handleNavigation');
+            setIsLoadingUser(false);
+            handleNavigation('/home');
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
@@ -180,6 +205,8 @@ const SignUp: React.FC = () => {
                     break;
             }
         }
+
+        setIsLoading(false);
     };
 
     return (
