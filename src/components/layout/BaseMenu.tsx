@@ -2,7 +2,12 @@ import React from 'react';
 import { privateRoutes } from '../../routers/routes';
 
 // firebase
+import { getAuth, signOut } from 'firebase/auth';
+import { firebaseApp } from '../../firebase';
+
 // The components
+import Box from '@mui/material/Box';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { Tooltip } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -15,8 +20,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // The customized components
 // CSS
@@ -90,6 +94,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const BaseMenu: React.FC<IBaseMenu> = () => {
+    //firebase
+    const auth = getAuth(firebaseApp);
+
     // The hooks were customized
     const cx = useHandleBindingClass(styles);
     const handleNavigation = useHandleNavigation();
@@ -97,6 +104,8 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
     // stores
     const isExpandMenu = useCommonStores((state) => state.isExpandMenu);
     const setIsExpandMenu = useCommonStores((state) => state.setIsExpandMenu);
+    const currentIndex = useCommonStores((state) => state.currentIndex);
+    const setCurrentIndex = useCommonStores((state) => state.setCurrentIndex);
 
     // states
     const theme = useTheme();
@@ -111,10 +120,15 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
 
     return (
         <>
-            <Drawer variant="permanent" open={isExpandMenu}>
-                <DrawerHeader className={cx('menu__icons', !isExpandMenu && '!justify-center')}>
+            <Drawer
+                className={cx('wrapper__base-menu', 'flex flex-0')}
+                variant="permanent"
+                open={false}
+                onClose={handleDrawerClose}
+            >
+                <DrawerHeader className={cx('menu__icons', '!justify-center')}>
                     <IconButton
-                        className={cx('menu__icon--expand', '!m-0', isExpandMenu && ' !hidden')}
+                        className={cx('menu__icon--expand', '!m-0')}
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
@@ -122,61 +136,188 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <IconButton
-                        className={cx('menu__icon--collapse', 'h-full !rounded-none')}
-                        onClick={handleDrawerClose}
-                        sx={[!isExpandMenu && { display: 'none' }]}
-                    >
-                        {theme.direction === 'rtl' ? <ChevronRightIcon className={cx('h-full')} /> : <ChevronLeftIcon />}
-                    </IconButton>
                 </DrawerHeader>
                 <Divider />
-                <List>
-                    {privateRoutes.map(
-                        (route, index) =>
+                <List className={cx('menu__list', 'flex-full')}>
+                    {privateRoutes.map((route, index) => {
+                        return (
                             route?.isMenu && (
-                                <ListItem
-                                    onClick={() => handleNavigation(route.path)}
-                                    key={index}
-                                    disablePadding
-                                    sx={{ display: 'block' }}
-                                >
+                                <ListItem className={cx('menu__item', 'flex flex-col !justify-start')} key={index} disablePadding>
                                     <ListItemButton
-                                        sx={[
-                                            {
-                                                minHeight: 48,
-                                                px: 2.5,
-                                            },
-                                            isExpandMenu
-                                                ? {
-                                                      justifyContent: 'initial',
-                                                  }
-                                                : {
-                                                      justifyContent: 'center',
-                                                  },
-                                        ]}
+                                        onClick={() => {
+                                            handleNavigation(route.path);
+                                            setCurrentIndex(index);
+                                        }}
+                                        className={cx(
+                                            'menu__item--icon',
+                                            '!min-h-[48px] !px-[20px] w-full !justify-center',
+                                            currentIndex === index && '!bg-[#E0E0E0]',
+                                        )}
                                     >
-                                        {!isExpandMenu ? (
-                                            <Tooltip title={route.tooltipText} placement="right-end" arrow>
-                                                <ListItemIcon
-                                                    sx={[
-                                                        {
-                                                            minWidth: 0,
-                                                            justifyContent: 'center',
-                                                        },
-                                                        isExpandMenu
-                                                            ? {
-                                                                  mr: 3,
-                                                              }
-                                                            : {
-                                                                  mr: 'auto',
-                                                              },
-                                                    ]}
-                                                >
-                                                    <InboxIcon />
-                                                </ListItemIcon>
-                                            </Tooltip>
-                                        ) : (
+                                        <Tooltip
+                                            classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
+                                            title={route.tooltipText}
+                                            placement="right-end"
+                                            arrow
+                                            leaveDelay={100}
+                                        >
+                                            <ListItemIcon
+                                                sx={[
+                                                    {
+                                                        minWidth: 0,
+                                                        justifyContent: 'center',
+                                                        mr: 'auto',
+                                                    },
+                                                ]}
+                                            >
+                                                {route?.IconMenu}
+                                            </ListItemIcon>
+                                        </Tooltip>
+                                        <ListItemText
+                                            className={cx('menu__item--name', 'opacity-0')}
+                                            primary={route.primaryText}
+                                        />
+                                    </ListItemButton>
+                                    {route?.children && (
+                                        <List className={cx('menu__list', 'flex-full w-full !py-0')}>
+                                            {route?.children.map((child, childIndex) => {
+                                                return (
+                                                    <ListItem
+                                                        className={cx(
+                                                            'menu__item  !w-full',
+                                                            'block',
+                                                            currentIndex === Number(index + '.' + (childIndex + 1)) &&
+                                                                'bg-[#E0E0E0]',
+                                                        )}
+                                                        onClick={() => {
+                                                            handleNavigation(route.path + child.path);
+                                                            setCurrentIndex(Number(index + '.' + (childIndex + 1)));
+                                                        }}
+                                                        key={Number(index + '.' + (childIndex + 1))}
+                                                        disablePadding
+                                                    >
+                                                        <ListItemButton
+                                                            className={cx(
+                                                                'menu__item--icon',
+                                                                '!min-h-[48px] !px-[20px]  w-full !justify-center',
+                                                            )}
+                                                            onClick={() => {
+                                                                handleNavigation(route.path + child.path);
+                                                                setCurrentIndex(Number(index + '.' + (childIndex + 1)));
+                                                            }}
+                                                        >
+                                                            <Tooltip
+                                                                classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
+                                                                title={child.tooltipText}
+                                                                placement="right-end"
+                                                                arrow
+                                                                leaveDelay={100}
+                                                            >
+                                                                <ListItemIcon
+                                                                    sx={[
+                                                                        {
+                                                                            minWidth: 0,
+                                                                            justifyContent: 'center',
+                                                                            mr: 'auto',
+                                                                        },
+                                                                    ]}
+                                                                >
+                                                                    {child?.IconMenu}
+                                                                </ListItemIcon>
+                                                            </Tooltip>
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                );
+                                            })}
+                                        </List>
+                                    )}
+                                </ListItem>
+                            )
+                        );
+                    })}
+                </List>
+                <Divider />
+                <List className={cx('menu__list', 'flex-0')}>
+                    <ListItem
+                        className={cx('menu__item', 'block', currentIndex === 9999 && 'bg[#E0E0E0]')}
+                        onClick={() => {
+                            // handleNavigation('/setting');
+                            signOut(auth);
+                            handleNavigation('/sign-in');
+                            setCurrentIndex(9999);
+                        }}
+                        disablePadding
+                    >
+                        <ListItemButton className={cx('menu__item--icon', '!min-h-[48px] !px-[20px] !justify-center')}>
+                            <Tooltip
+                                classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
+                                title={'Setting'}
+                                placement="right-end"
+                                arrow
+                                leaveDelay={100}
+                            >
+                                <ListItemIcon
+                                    sx={[
+                                        {
+                                            minWidth: 0,
+                                            mr: 'auto',
+                                            justifyContent: 'center',
+                                        },
+                                    ]}
+                                >
+                                    <SettingsIcon />
+                                </ListItemIcon>
+                            </Tooltip>
+                        </ListItemButton>
+                    </ListItem>
+                </List>
+                <Divider />
+            </Drawer>
+
+            <SwipeableDrawer
+                className={cx('wrapper__base-menu', '')}
+                anchor={'left'}
+                open={isExpandMenu}
+                onClose={handleDrawerClose}
+                onOpen={handleDrawerOpen}
+            >
+                <Box
+                    className={cx('', 'flex flex-col h-full overflow-hidden')}
+                    role="presentation"
+                    onClick={handleDrawerClose}
+                    onKeyDown={handleDrawerClose}
+                    sx={{ width: drawerWidth }}
+                >
+                    <DrawerHeader className={cx('menu__icons', '!justify-between')}>
+                        <h3 className={cx('', 'text-[1.6rem] w-full text-center')}>Todo List Menu</h3>
+                        <IconButton
+                            className={cx('menu__icon--collapse', 'h-full !rounded-none !text-[1.6rem]')}
+                            onClick={handleDrawerClose}
+                        >
+                            {theme.direction === 'rtl' ? <ChevronRightIcon className={cx('h-full')} /> : <ChevronLeftIcon />}
+                        </IconButton>
+                    </DrawerHeader>
+                    <Divider />
+                    <List className={cx('menu__list', 'flex-full')}>
+                        {privateRoutes.map((route, index) => {
+                            return (
+                                route?.isMenu && (
+                                    <ListItem
+                                        className={cx('menu__item', 'flex flex-col !justify-start')}
+                                        key={index}
+                                        disablePadding
+                                    >
+                                        <ListItemButton
+                                            onClick={() => {
+                                                handleNavigation(route.path);
+                                                setCurrentIndex(index);
+                                            }}
+                                            className={cx(
+                                                'menu__item--icon',
+                                                '!min-h-[48px] !px-[20px] w-full !justify-initial',
+                                                currentIndex === index && '!bg-[#E0E0E0]',
+                                            )}
+                                        >
                                             <ListItemIcon
                                                 sx={[
                                                     {
@@ -192,80 +333,141 @@ const BaseMenu: React.FC<IBaseMenu> = () => {
                                                           },
                                                 ]}
                                             >
-                                                <InboxIcon />
+                                                {route?.IconMenu}
                                             </ListItemIcon>
+                                            <ListItemText
+                                                className={cx('menu__item--name', 'opacity-100')}
+                                                primary={route.primaryText}
+                                            />
+                                        </ListItemButton>
+                                        {route?.children && (
+                                            <List className={cx('menu__list', 'flex-full w-full !ml-0')}>
+                                                {route?.children.map((child, childIndex) => {
+                                                    return (
+                                                        <ListItem
+                                                            className={cx(
+                                                                'menu__item !w-full',
+                                                                'block',
+                                                                currentIndex === Number(index + '.' + (childIndex + 1)) &&
+                                                                    'bg-[#E0E0E0]',
+                                                            )}
+                                                            key={Number(index + '.' + (childIndex + 1))}
+                                                            disablePadding
+                                                        >
+                                                            <ListItemButton
+                                                                className={cx(
+                                                                    'menu__item--icon',
+                                                                    '!min-h-[48px] !pl-[5.6rem]  w-full !justify-initial',
+                                                                )}
+                                                                onClick={() => {
+                                                                    handleNavigation(route.path + child.path);
+                                                                    setCurrentIndex(Number(index + '.' + (childIndex + 1)));
+                                                                }}
+                                                            >
+                                                                <ListItemIcon
+                                                                    sx={[
+                                                                        {
+                                                                            minWidth: 0,
+                                                                            justifyContent: 'center',
+                                                                        },
+                                                                        isExpandMenu
+                                                                            ? {
+                                                                                  mr: 3,
+                                                                              }
+                                                                            : {
+                                                                                  mr: 'auto',
+                                                                              },
+                                                                    ]}
+                                                                >
+                                                                    {child?.IconMenu}
+                                                                </ListItemIcon>
+                                                                <ListItemText
+                                                                    className={cx('menu__item--name', 'opacity-100')}
+                                                                    primary={child.primaryText}
+                                                                />
+                                                            </ListItemButton>
+                                                        </ListItem>
+                                                    );
+                                                })}
+                                            </List>
                                         )}
-
-                                        <ListItemText
-                                            primary={route.primaryText}
+                                    </ListItem>
+                                )
+                            );
+                        })}
+                    </List>
+                    <Divider />
+                    <List className={cx('menu__list', 'flex-0')}>
+                        <ListItem
+                            className={cx('menu__item', 'block', currentIndex === 9999 && 'bg[#E0E0E0]')}
+                            onClick={() => {
+                                handleNavigation('/setting');
+                                setCurrentIndex(9999);
+                            }}
+                            disablePadding
+                        >
+                            <ListItemButton
+                                className={cx(
+                                    'menu__item--icon',
+                                    '!min-h-[48px] !px-[20px]',
+                                    isExpandMenu ? '!justify-initial' : '!justify-center',
+                                )}
+                            >
+                                {!isExpandMenu ? (
+                                    <Tooltip
+                                        classes={{ tooltip: cx('menu__item--tooltip', '!text-[1.2rem]') }}
+                                        title={'Setting'}
+                                        placement="right-end"
+                                        arrow
+                                        leaveDelay={100}
+                                    >
+                                        <ListItemIcon
                                             sx={[
+                                                {
+                                                    minWidth: 0,
+                                                    justifyContent: 'center',
+                                                },
                                                 isExpandMenu
                                                     ? {
-                                                          opacity: 1,
+                                                          mr: 3,
                                                       }
                                                     : {
-                                                          opacity: 0,
+                                                          mr: 'auto',
                                                       },
                                             ]}
-                                        />
-                                    </ListItemButton>
-                                </ListItem>
-                            ),
-                    )}
-                </List>
-                <Divider />
-                <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                sx={[
-                                    {
-                                        minHeight: 48,
-                                        px: 2.5,
-                                    },
-                                    isExpandMenu
-                                        ? {
-                                              justifyContent: 'initial',
-                                          }
-                                        : {
-                                              justifyContent: 'center',
-                                          },
-                                ]}
-                            >
-                                <ListItemIcon
-                                    sx={[
-                                        {
-                                            minWidth: 0,
-                                            justifyContent: 'center',
-                                        },
-                                        isExpandMenu
-                                            ? {
-                                                  mr: 3,
-                                              }
-                                            : {
-                                                  mr: 'auto',
-                                              },
-                                    ]}
-                                >
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
+                                        >
+                                            <SettingsIcon />
+                                        </ListItemIcon>
+                                    </Tooltip>
+                                ) : (
+                                    <ListItemIcon
+                                        sx={[
+                                            {
+                                                minWidth: 0,
+                                                justifyContent: 'center',
+                                            },
+                                            isExpandMenu
+                                                ? {
+                                                      mr: 3,
+                                                  }
+                                                : {
+                                                      mr: 'auto',
+                                                  },
+                                        ]}
+                                    >
+                                        <SettingsIcon />
+                                    </ListItemIcon>
+                                )}
                                 <ListItemText
-                                    primary={text}
-                                    sx={[
-                                        isExpandMenu
-                                            ? {
-                                                  opacity: 1,
-                                              }
-                                            : {
-                                                  opacity: 0,
-                                              },
-                                    ]}
+                                    className={cx('menu__item--name', isExpandMenu ? 'opacity-100' : 'opacity-0')}
+                                    primary={'Setting'}
                                 />
                             </ListItemButton>
                         </ListItem>
-                    ))}
-                </List>
-            </Drawer>
+                    </List>
+                    <Divider />
+                </Box>
+            </SwipeableDrawer>
         </>
     );
 };

@@ -21,6 +21,10 @@ interface IForgotPassword {
 }
 
 const ForgotPassword: React.FC<IForgotPassword> = ({ open, handleClose }) => {
+    /**
+     * function send mail get your password
+     * @param event
+     */
     const handleOnSubmit: (event: React.FormEvent<HTMLFormElement>) => void = (event) => {
         const data = new FormData(event.currentTarget);
         console.log('call reset password api with', {
@@ -39,12 +43,13 @@ const ForgotPassword: React.FC<IForgotPassword> = ({ open, handleClose }) => {
                 onSubmit: handleOnSubmit,
             }}
         >
-            <DialogTitle>Reset password</DialogTitle>
+            <DialogTitle className="!text-[2rem]">Reset password</DialogTitle>
             <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
-                <DialogContentText>
+                <DialogContentText className="!text-[1.6rem]">
                     Enter your account&apos;s email address, and we&apos;ll send you a link to reset your password.
                 </DialogContentText>
                 <OutlinedInput
+                    className="!text-[1.6rem]"
                     autoFocus
                     required
                     margin="dense"
@@ -57,8 +62,10 @@ const ForgotPassword: React.FC<IForgotPassword> = ({ open, handleClose }) => {
                 />
             </DialogContent>
             <DialogActions sx={{ pb: 3, px: 3 }}>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button variant="contained" type="submit">
+                <Button className="!text-[1.4rem]" onClick={handleClose}>
+                    Cancel
+                </Button>
+                <Button className="!text-[1.4rem]" variant="contained" type="submit">
                     Continue
                 </Button>
             </DialogActions>

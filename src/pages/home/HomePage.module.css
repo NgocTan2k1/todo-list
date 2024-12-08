@@ -1,0 +1,34 @@
+.wrapper__home-page {
+}
+
+.item__icon {
+    fill: #ffc400 !important;
+}
+.modal__add-project div div {
+    width: 70%;
+    /* min-width: 300px; */
+}
+.modal__add-project div div div {
+    width: 100%;
+}
+.input__item input,
+.input__item label,
+.group__date label,
+.group__date input {
+    font-size: 1.6rem;
+}
+
+.input__item span,
+.group__date span,
+.input__item p,
+.group__date div > p {
+    font-size: 1.2rem;
+}
+.date__item svg {
+    width: 20px;
+    height: 20px;
+}
+.button__item,
+.button__item span {
+    font-size: 1.2rem !important ;
+}

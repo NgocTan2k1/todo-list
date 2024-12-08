@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { type IRoute, privateRoutes, publicRoutes } from './routers/routes';
+
 // firebase
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { firebaseApp } from './firebase';
@@ -14,6 +15,8 @@ import CircularIndeterminate from './components/loading/circular-loading/Circula
 import BaseMenu from './components/layout/BaseMenu';
 
 // CSS
+import './assets/styles/App.css';
+
 // The stores
 import useAuthenticationStores from './stores/authenticationStores';
 import useCommonStores from './stores/commonStores';
@@ -22,12 +25,15 @@ import useCommonStores from './stores/commonStores';
 // The constants
 
 const App: React.FC = () => {
-    // firebase
-    const auth = getAuth(firebaseApp);
+    // the hooks customized
 
     // stores
+    // authentication stores
     const isLogged = useAuthenticationStores((state) => state.isLogged);
     const setIsLogged = useAuthenticationStores((state) => state.setIsLogged);
+    const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
+    const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    // common stores
     const isLoading = useCommonStores((state) => state.isLoading);
     const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
@@ -36,38 +42,74 @@ const App: React.FC = () => {
     const [routes, setRoutes] = useState<IRoute[] | []>([]);
 
     useEffect(() => {
+        // firebase
+        const auth = getAuth(firebaseApp);
+
         setIsLoading(false);
         onAuthStateChanged(auth, (user) => {
+            setIsLoadingUser(true);
             if (user) {
                 setIsLogged(true);
-                setRoutes(privateRoutes);
+                setRoutes([...privateRoutes, ...publicRoutes]);
             } else {
                 setIsLogged(false);
                 setRoutes(publicRoutes);
             }
+            setIsLoadingUser(false);
         });
-
         return () => {
             console.log('===== Unmouted App.tsx component =====');
         };
-    }, [isLogged]);
+    }, []);
 
     if (routes.length === 0) {
         return (
-            <div className="flex h-[100vh] w-full items-center justify-center z-[9999] ">
+            <div className="flex h-[100vh] w-full items-center justify-center z-[99999] ">
                 <CircularIndeterminate />
             </div>
         );
     }
 
     return (
-        <div className="h-[100vh]">
+        <div className="w-full h-full">
+            {isLoadingUser && (
+                <div className="absolute flex h-[100vh] w-full items-center justify-center z-[99999]">
+                    <CircularIndeterminate />
+                </div>
+            )}
             {isLoading && <LinearIndeterminate />}
-            <Box className="flex h-full">
+            <Box key={'wrapper'} className="flex !max-h-full !max-w-full !h-full !w-full">
                 {isLogged && <BaseMenu />}
-                <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                <Box
+                    key={'item'}
+                    className="flex-full !max-h-full w-[calc(100%-57px)] overflow-hidden"
+                    component="main"
+                    sx={{ p: 0 }}
+                >
+                    {/* <div
+                        className={`${isClipPath ? 'top--in' : ''} ${!isClipPath ? 'top--out' : ''} z-[999] w-full h-[50%] bg-slate-600`}
+                    ></div>
+                    <div
+                        className={`${isClipPath ? 'bot--in' : ''} ${!isClipPath ? 'bot--out' : ''} z-[999] w-full h-[50%] bg-[blue]`}
+                    ></div> */}
+
                     <Routes>
-                        {routes?.map((route) => <Route key={route.id} path={route.path} Component={route.Component}></Route>)}
+                        {routes?.map((route, index) => {
+                            return <Route key={index + '-0'} path={route.path} Component={route.Component} />;
+                        })}
+
+                        {routes?.map((route, index) => {
+                            return (
+                                route?.children &&
+                                route?.children.map((child, childIndex) => (
+                                    <Route
+                                        key={index + '-' + childIndex}
+                                        path={route.path + child.path}
+                                        Component={child.Component}
+                                    />
+                                ))
+                            );
+                        })}
                     </Routes>
                 </Box>
             </Box>

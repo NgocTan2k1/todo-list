@@ -1,4 +1,19 @@
+.wrapper__base-menu {
+}
 .menu__icons {
     display: flex;
     width: 100%;
+}
+.menu__icon--expand svg,
+.menu__icon--collapse svg,
+.menu__item--icon svg {
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    font-size: 1.6rem !important;
+}
+
+.menu__item--tooltip span,
+.menu__item--name span {
+    font-size: 1.6rem !important;
+    line-height: 1.6 !important;
 }

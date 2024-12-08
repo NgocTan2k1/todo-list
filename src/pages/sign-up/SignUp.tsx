@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // firebase
-// import { firebaseApp } from '../../firebase';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { firebaseApp } from '../../firebase';
+import { createUserWithEmailAndPassword, deleteUser, getAuth } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 // The components
 import Box from '@mui/material/Box';
@@ -18,14 +19,24 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 
 // The customized components
+import BaseNewPage from '../../components/layout/BasePage';
+import CircularIndeterminate from '../../components/loading/circular-loading/CircularLoading';
+
 // CSS
 import { styled } from '@mui/material/styles';
-import { useHandleNavigation } from '../../hooks/useHandleNavigation';
-import BaseNewPage from '../../components/layout/BasePage';
+import styles from './SignUp.module.css';
 
 // The stores
+import useAuthenticationStores from '../../stores/authenticationStores';
+import useCommonStores from '../../stores/commonStores';
+
 // The customized hooks
+import { useHandleNavigation } from '../../hooks/useHandleNavigation';
+import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
+
 // The constants
+// The interfaces
+import { UserModal } from '../../modals/User';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -61,6 +72,14 @@ export const loaderSignUpPage = async (): Promise<Response | string> => {
 const SignUp: React.FC = () => {
     // The hooks were customized
     const handleNavigation = useHandleNavigation();
+    const cx = useHandleBindingClass(styles);
+
+    // stores
+    // authentication stores
+    const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
+    // common stores
+    const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
     // state
     const [emailError, setEmailError] = useState(false);
@@ -71,6 +90,24 @@ const SignUp: React.FC = () => {
     const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState('');
     const [nameError, setNameError] = useState(false);
     const [nameErrorMessage, setNameErrorMessage] = useState('');
+
+    useEffect(() => {
+        console.log('===== Mouted SignUpPage.tsx component =====');
+        setIsLoadingUser(true);
+        // firebase
+        const auth = getAuth(firebaseApp);
+        const user = auth.currentUser;
+        console.log('currentUser:', user);
+        if (user) {
+            handleNavigation('/home');
+        } else {
+            setIsLoadingUser(false);
+        }
+
+        return () => {
+            console.log('===== Unmouted SignUpPage.tsx component =====');
+        };
+    }, []);
 
     /**
      * function to validate form
@@ -134,35 +171,37 @@ const SignUp: React.FC = () => {
      */
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setIsLoading(true);
         if (emailError || passwordError || confirmPasswordError || nameError) {
+            setIsLoading(false);
             return;
         }
 
         const data = new FormData(event.currentTarget);
         const email = String(data.get('email'));
-        // const name = String(data.get('name'));
+        const name = String(data.get('name'));
         const password = String(data.get('password'));
         // const allowExtraEmails = String(data.get('allowExtraEmails'));
+        const auth = getAuth();
 
+        let userCredential;
         try {
-            const auth = getAuth();
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            console.log('userCredential:', userCredential);
-            console.log('user:', userCredential.user);
-
-            // save user in database
-
-            // redirect /sign-in
-            handleNavigation('/sign-in');
+            // create a new user
+            userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
+            console.log('===== Sign Up =====');
+            console.log('===== createUserWithEmailAndPassword =====');
+            console.log('error:', error);
             switch (error.code) {
                 case 'auth/email-already-in-use':
+                    console.log(error.code);
                     setEmailError(true);
                     setEmailErrorMessage('Email exists');
                     break;
                 default:
+                    console.log('default');
                     setNameError(true);
                     setEmailError(true);
                     setPasswordError(true);
@@ -176,8 +215,104 @@ const SignUp: React.FC = () => {
                     // === END TODO ===
                     break;
             }
+            setIsLoading(false);
+            return;
         }
+
+        try {
+            // save user in database
+            const newUser: UserModal = {
+                userId: userCredential.user.uid,
+                username: name,
+                email: email,
+                role: 2, // role employee
+                createAt: new Date(),
+                updateAt: '',
+                members: [],
+                deleteFlag: 0,
+            };
+
+            // connect firestore
+            const db = getFirestore(firebaseApp);
+
+            // Add a new document in collection "users"
+            await setDoc(doc(db, 'users', userCredential?.user.uid), newUser);
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.log('===== Sign Up =====');
+            console.log('===== save user in database =====');
+            console.log('error:', error);
+            switch (error.code) {
+                case 'permission-denied':
+                    console.log(error.code);
+                    setNameError(true);
+                    setEmailError(true);
+                    setPasswordError(true);
+                    setConfirmPasswordError(true);
+                    setNameErrorMessage('The system is experiencing an error, please try again later.');
+                    setEmailErrorMessage('The system is experiencing an error, please try again later.');
+                    setPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    setConfirmPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    break;
+                default:
+                    console.log('default');
+                    setNameError(true);
+                    setEmailError(true);
+                    setPasswordError(true);
+                    setConfirmPasswordError(true);
+                    setNameErrorMessage('The system is experiencing an error, please try again later.');
+                    setEmailErrorMessage('The system is experiencing an error, please try again later.');
+                    setPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    setConfirmPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    // ===== TODO =====
+                    // send mail for admin
+                    // === END TODO ===
+                    break;
+            }
+            try {
+                const user = auth.currentUser;
+                if (user) await deleteUser(user);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (error: any) {
+                console.log('===== Sign Up =====');
+                console.log('===== delete user when can"t save in database =====');
+                console.log('error:', error);
+                switch (error.code) {
+                    default:
+                        console.log('default');
+                        setNameError(true);
+                        setEmailError(true);
+                        setPasswordError(true);
+                        setConfirmPasswordError(true);
+                        setNameErrorMessage('The system is experiencing an error, please try again later.');
+                        setEmailErrorMessage('The system is experiencing an error, please try again later.');
+                        setPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                        setConfirmPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                        // ===== TODO =====
+                        // send mail for admin
+                        // === END TODO ===
+                        break;
+                }
+            }
+            setIsLoading(false);
+            return;
+        }
+        // redirect /home
+        console.log('handleNavigation');
+        setIsLoadingUser(false);
+        handleNavigation('/home');
+
+        setIsLoading(false);
     };
+
+    if (isLoadingUser) {
+        return (
+            <div className="flex h-[100vh] w-full items-center justify-center z-[99999999] ">
+                <CircularIndeterminate />
+            </div>
+        );
+    }
 
     return (
         <BaseNewPage>
@@ -191,6 +326,7 @@ const SignUp: React.FC = () => {
                 >
                     <Card variant="outlined">
                         <Typography
+                            className="!text-[36px]"
                             component="h1"
                             variant="h4"
                             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
@@ -198,8 +334,10 @@ const SignUp: React.FC = () => {
                             Sign up
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <FormControl>
-                                <FormLabel htmlFor="name">Full name</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="name">
+                                    Full name
+                                </FormLabel>
                                 <TextField
                                     autoComplete="name"
                                     name="name"
@@ -212,8 +350,10 @@ const SignUp: React.FC = () => {
                                     color={nameError ? 'error' : 'primary'}
                                 />
                             </FormControl>
-                            <FormControl>
-                                <FormLabel htmlFor="email">Email</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="email">
+                                    Email
+                                </FormLabel>
                                 <TextField
                                     required
                                     fullWidth
@@ -227,8 +367,10 @@ const SignUp: React.FC = () => {
                                     color={passwordError ? 'error' : 'primary'}
                                 />
                             </FormControl>
-                            <FormControl>
-                                <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="password">
+                                    Password
+                                </FormLabel>
                                 <TextField
                                     required
                                     fullWidth
@@ -243,8 +385,10 @@ const SignUp: React.FC = () => {
                                     color={passwordError ? 'error' : 'primary'}
                                 />
                             </FormControl>
-                            <FormControl>
-                                <FormLabel htmlFor="confirm-password">Confirm Password</FormLabel>
+                            <FormControl className={cx('sign__up--form-control')}>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="confirm-password">
+                                    Confirm Password
+                                </FormLabel>
                                 <TextField
                                     required
                                     fullWidth
@@ -260,17 +404,24 @@ const SignUp: React.FC = () => {
                                 />
                             </FormControl>
                             <FormControlLabel
+                                className={cx('sign__up--form-control')}
                                 control={<Checkbox name="allowExtraEmails" color="primary" />}
                                 label="I want to receive updates via email."
                             />
-                            <Button type="submit" fullWidth variant="contained" onClick={validateInputs}>
+                            <Button
+                                className="!text-[1.4rem]"
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                onClick={validateInputs}
+                            >
                                 Sign up
                             </Button>
-                            <Typography sx={{ textAlign: 'center' }}>
+                            <Typography className="!text-[1.4rem]" sx={{ textAlign: 'center' }}>
                                 Already have an account?{' '}
                                 <span>
                                     <Link
-                                        className="cursor-pointer"
+                                        className="cursor-pointer !text-[1.4rem]"
                                         variant="body2"
                                         sx={{ alignSelf: 'center' }}
                                         onClick={() => {

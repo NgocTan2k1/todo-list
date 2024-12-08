@@ -22,9 +22,11 @@ import MuiCard from '@mui/material/Card';
 import BaseNewPage from '../../components/layout/BasePage';
 import ForgotPassword from './ForgotPassword';
 import BaseModal from '../../components/modal/BaseModal';
+import CircularIndeterminate from '../../components/loading/circular-loading/CircularLoading';
 
 // CSS
 import { styled } from '@mui/material/styles';
+import styles from './SignIn.module.css';
 
 // The stores
 import useAuthenticationStores from '../../stores/authenticationStores';
@@ -32,6 +34,7 @@ import useCommonStores from '../../stores/commonStores';
 
 // The customized hooks
 import { useHandleNavigation } from '../../hooks/useHandleNavigation';
+import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
 
 // The constants
 
@@ -76,11 +79,14 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 const SignIn: React.FC = () => {
     // The hooks were customized
     const handleNavigation = useHandleNavigation();
+    const cx = useHandleBindingClass(styles);
 
     // stores
     // authentication stores
     const setUserCredential = useAuthenticationStores((state) => state.setUserCredential);
     const setIsLogged = useAuthenticationStores((state) => state.setIsLogged);
+    const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
     // common stores
     const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
@@ -90,11 +96,26 @@ const SignIn: React.FC = () => {
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
     const [isForgotPasswordModal, setIsForgotPasswordModal] = useState(false);
-    const [isNoticeModal, setIsNoticeModal] = useState(true);
+    const [isNoticeModal, setIsNoticeModal] = useState(false);
 
     // effects
     useEffect(() => {
-        setIsLoading(false);
+        console.log('===== Mouted SignInPage.tsx component =====');
+        setIsLoadingUser(true);
+
+        // firebase
+        const auth = getAuth(firebaseApp);
+        const user = auth.currentUser;
+        console.log('currentUser:', user);
+        if (user) {
+            handleNavigation('/home');
+        } else {
+            setIsLoadingUser(false);
+        }
+
+        return () => {
+            console.log('===== Unmouted SignUpPage.tsx component =====');
+        };
     }, []);
 
     /**
@@ -123,7 +144,6 @@ const SignIn: React.FC = () => {
         if (email && password) {
             try {
                 const auth = getAuth(firebaseApp);
-
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 setUserCredential(userCredential);
                 setIsLogged(true);
@@ -208,8 +228,16 @@ const SignIn: React.FC = () => {
         setIsForgotPasswordModal(false);
     };
 
+    if (isLoadingUser) {
+        return (
+            <div className="flex h-[100vh] w-full items-center justify-center z-[99999] ">
+                <CircularIndeterminate />
+            </div>
+        );
+    }
+
     return (
-        <BaseNewPage>
+        <BaseNewPage tailwindCSS="my-auto h-full">
             <BaseModal
                 isOpen={isNoticeModal}
                 setIsOpen={() => setIsNoticeModal(false)}
@@ -222,6 +250,7 @@ const SignIn: React.FC = () => {
             <SignInContainer className="mt-0 h-full" direction="column" justifyContent="space-between">
                 <Card variant="outlined">
                     <Typography
+                        className="!text-[3.6rem]"
                         component="h1"
                         variant="h4"
                         sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
@@ -239,9 +268,12 @@ const SignIn: React.FC = () => {
                             gap: 2,
                         }}
                     >
-                        <FormControl>
-                            <FormLabel htmlFor="email">Email</FormLabel>
+                        <FormControl className={cx('sign__in--form-control')}>
+                            <FormLabel className="!text-[1.6rem]" htmlFor="email">
+                                Email
+                            </FormLabel>
                             <TextField
+                                className="!text-[1.6rem]"
                                 error={emailError}
                                 helperText={emailErrorMessage}
                                 id="email"
@@ -257,10 +289,13 @@ const SignIn: React.FC = () => {
                                 sx={{ ariaLabel: 'email' }}
                             />
                         </FormControl>
-                        <FormControl>
+                        <FormControl className={cx('sign__in--form-control')}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <FormLabel htmlFor="password">Password</FormLabel>
+                                <FormLabel className="!text-[1.6rem]" htmlFor="password">
+                                    Password
+                                </FormLabel>
                                 <Link
+                                    className="!text-[1.2rem]"
                                     component="button"
                                     type="button"
                                     onClick={handleOpenForgotPasswordModal}
@@ -285,16 +320,20 @@ const SignIn: React.FC = () => {
                                 color={passwordError ? 'error' : 'primary'}
                             />
                         </FormControl>
-                        <FormControlLabel control={<Checkbox name="remember" color="primary" />} label="Remember me" />
+                        <FormControlLabel
+                            className={cx('sign__in--form-control')}
+                            control={<Checkbox name="remember" color="primary" />}
+                            label="Remember me"
+                        />
                         <ForgotPassword open={isForgotPasswordModal} handleClose={handleCloseForgotPasswordModal} />
-                        <Button type="submit" fullWidth variant="contained" onClick={validateInputs}>
+                        <Button className="!text-[1.4rem]" type="submit" fullWidth variant="contained" onClick={validateInputs}>
                             Sign in
                         </Button>
-                        <Typography sx={{ textAlign: 'center' }}>
+                        <Typography className="!text-[1.6rem]" sx={{ textAlign: 'center' }}>
                             Don&apos;t have an account?{' '}
                             <span>
                                 <Link
-                                    className="cursor-pointer"
+                                    className="cursor-pointer !text-[1.6rem]"
                                     variant="body2"
                                     sx={{ alignSelf: 'center' }}
                                     type="button"

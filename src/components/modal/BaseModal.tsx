@@ -1,8 +1,20 @@
 import React from 'react';
-// import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+
+// firebase
+// The components
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+
+// The customized components
+// CSS
+import styles from './BaseModal.module.css';
+
+// The Stores
+// The customized hooks
+import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
+
+// The constants
 
 export interface IBaseModal {
     isOpen: boolean;
@@ -12,30 +24,15 @@ export interface IBaseModal {
     children?: React.ReactNode;
 }
 
-// const useStyles = makeStyles((theme: Theme) =>
-//     createStyles({
-//         modal: {
-//             display: 'flex',
-//             alignItems: 'center',
-//             justifyContent: 'center',
-//         },
-//         paper: {
-//             backgroundColor: theme.palette.background.paper,
-//             border: '2px solid #000',
-//             boxShadow: theme.shadows[5],
-//             padding: theme.spacing(2, 4, 3),
-//         },
-//     }),
-// );
-
 const BaseModal: React.FC<IBaseModal> = ({ isOpen, setIsOpen, children, tailwindCSSModal, tailwindCSSChildren }) => {
-    // const classes = useStyles();
+    // The customized hooks
+    const cx = useHandleBindingClass(styles);
 
     return (
         <Modal
             aria-labelledby="transition-modal-title"
             aria-describedby="transition-modal-description"
-            className={`flex items-center justify-center ${tailwindCSSModal}`}
+            className={cx('wrapper__base-modal', `flex items-center justify-center ${tailwindCSSModal}`)}
             open={isOpen}
             onClose={setIsOpen}
             closeAfterTransition

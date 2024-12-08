@@ -1,10 +1,9 @@
-export const formatDate = (date: Date, formatForm: string): string => {
+export const formatDate = (date: Date, formatForm?: string): string => {
     const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
     };
-
     const formattedDate: string = new Intl.DateTimeFormat('vi-VN', options).format(date);
 
     const [day, month, year] = formattedDate.split('/');

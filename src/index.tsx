@@ -7,11 +7,11 @@ import { BrowserRouter } from 'react-router-dom';
 const root: ReactDOM.Root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-    <React.StrictMode>
-        <GlobalStyles>
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
-        </GlobalStyles>
-    </React.StrictMode>,
+    // <React.StrictMode>
+    <GlobalStyles>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </GlobalStyles>,
+    /* </React.StrictMode>, */
 );

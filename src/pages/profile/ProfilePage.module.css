@@ -1,0 +1,20 @@
+.content__profile {
+}
+.profile-page__avatar {
+    background: linear-gradient(45deg, #ff6ec4, #7873f5);
+}
+
+.profile-page__avatar svg {
+    width: 90% !important;
+    height: 90% !important;
+}
+
+.profile-page__avatar img {
+    position: relative;
+    object-position: top;
+    user-select: none !important;
+    width: 99% !important;
+    height: 99% !important;
+    border-radius: 50%;
+    -webkit-user-drag: none;
+}
