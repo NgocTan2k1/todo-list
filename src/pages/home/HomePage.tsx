@@ -16,10 +16,14 @@ import ProjectItem from './components/ProjectItem';
 import styles from './HomePage.module.css';
 
 // The stores
+import useAuthenticationStores from '../../stores/authenticationStores';
 
 // The customized hooks
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
 import ProjectCreatingModal from '../../components/modal/ProjectCreatingModal';
+import { getAuth } from 'firebase/auth';
+import { firebaseApp } from '../../firebase';
+import { useHandleNavigation } from '../../hooks/useHandleNavigation';
 
 // The constants
 
@@ -41,6 +45,11 @@ export interface Project {
 const HomePage: React.FC = () => {
     // The customized hooks
     const cx = useHandleBindingClass(styles);
+    const handleNavigation = useHandleNavigation();
+
+    // stores
+    // authentication stores
+    const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
 
     // states
     const [isProjectCreatingModal, setIsProjectCreatingModal] = useState(false);
@@ -83,6 +92,16 @@ const HomePage: React.FC = () => {
 
     // effect
     useEffect(() => {
+        console.log('===== Mouted HomePage.tsx component =====');
+        setIsLoadingUser(true);
+        // firebase
+        const auth = getAuth(firebaseApp);
+        const user = auth.currentUser;
+        console.log('currentUser:', user);
+        if (!user) {
+            handleNavigation('/sign-in');
+        }
+        setIsLoadingUser(false);
         return () => {
             console.log('===== Unmouted HomePage.tsx component =====');
             clearTimeout(timeoutId.current);

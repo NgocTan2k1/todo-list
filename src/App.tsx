@@ -25,9 +25,6 @@ import useCommonStores from './stores/commonStores';
 // The constants
 
 const App: React.FC = () => {
-    // firebase
-    const auth = getAuth(firebaseApp);
-
     // the hooks customized
 
     // stores
@@ -45,12 +42,15 @@ const App: React.FC = () => {
     const [routes, setRoutes] = useState<IRoute[] | []>([]);
 
     useEffect(() => {
+        // firebase
+        const auth = getAuth(firebaseApp);
+
         setIsLoading(false);
         onAuthStateChanged(auth, (user) => {
             setIsLoadingUser(true);
             if (user) {
                 setIsLogged(true);
-                setRoutes(privateRoutes);
+                setRoutes([...privateRoutes, ...publicRoutes]);
             } else {
                 setIsLogged(false);
                 setRoutes(publicRoutes);
@@ -62,7 +62,7 @@ const App: React.FC = () => {
         };
     }, []);
 
-    if (routes.length === 0 || isLoadingUser) {
+    if (routes.length === 0) {
         return (
             <div className="flex h-[100vh] w-full items-center justify-center z-[99999] ">
                 <CircularIndeterminate />
@@ -72,6 +72,11 @@ const App: React.FC = () => {
 
     return (
         <div className="w-full h-full">
+            {isLoadingUser && (
+                <div className="absolute flex h-[100vh] w-full items-center justify-center z-[99999]">
+                    <CircularIndeterminate />
+                </div>
+            )}
             {isLoading && <LinearIndeterminate />}
             <Box key={'wrapper'} className="flex !max-h-full !max-w-full !h-full !w-full">
                 {isLogged && <BaseMenu />}

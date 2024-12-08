@@ -22,6 +22,7 @@ import MuiCard from '@mui/material/Card';
 import BaseNewPage from '../../components/layout/BasePage';
 import ForgotPassword from './ForgotPassword';
 import BaseModal from '../../components/modal/BaseModal';
+import CircularIndeterminate from '../../components/loading/circular-loading/CircularLoading';
 
 // CSS
 import { styled } from '@mui/material/styles';
@@ -84,6 +85,8 @@ const SignIn: React.FC = () => {
     // authentication stores
     const setUserCredential = useAuthenticationStores((state) => state.setUserCredential);
     const setIsLogged = useAuthenticationStores((state) => state.setIsLogged);
+    const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
     // common stores
     const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
@@ -97,7 +100,22 @@ const SignIn: React.FC = () => {
 
     // effects
     useEffect(() => {
-        setIsLoading(false);
+        console.log('===== Mouted SignInPage.tsx component =====');
+        setIsLoadingUser(true);
+
+        // firebase
+        const auth = getAuth(firebaseApp);
+        const user = auth.currentUser;
+        console.log('currentUser:', user);
+        if (user) {
+            handleNavigation('/home');
+        } else {
+            setIsLoadingUser(false);
+        }
+
+        return () => {
+            console.log('===== Unmouted SignUpPage.tsx component =====');
+        };
     }, []);
 
     /**
@@ -210,8 +228,16 @@ const SignIn: React.FC = () => {
         setIsForgotPasswordModal(false);
     };
 
+    if (isLoadingUser) {
+        return (
+            <div className="flex h-[100vh] w-full items-center justify-center z-[99999] ">
+                <CircularIndeterminate />
+            </div>
+        );
+    }
+
     return (
-        <BaseNewPage>
+        <BaseNewPage tailwindCSS="my-auto h-full">
             <BaseModal
                 isOpen={isNoticeModal}
                 setIsOpen={() => setIsNoticeModal(false)}

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // firebase
 import { firebaseApp } from '../../firebase';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, deleteUser, getAuth } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 // The components
 import Box from '@mui/material/Box';
@@ -20,6 +20,8 @@ import MuiCard from '@mui/material/Card';
 
 // The customized components
 import BaseNewPage from '../../components/layout/BasePage';
+import CircularIndeterminate from '../../components/loading/circular-loading/CircularLoading';
+
 // CSS
 import { styled } from '@mui/material/styles';
 import styles from './SignUp.module.css';
@@ -75,6 +77,7 @@ const SignUp: React.FC = () => {
     // stores
     // authentication stores
     const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
     // common stores
     const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
@@ -87,6 +90,24 @@ const SignUp: React.FC = () => {
     const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState('');
     const [nameError, setNameError] = useState(false);
     const [nameErrorMessage, setNameErrorMessage] = useState('');
+
+    useEffect(() => {
+        console.log('===== Mouted SignUpPage.tsx component =====');
+        setIsLoadingUser(true);
+        // firebase
+        const auth = getAuth(firebaseApp);
+        const user = auth.currentUser;
+        console.log('currentUser:', user);
+        if (user) {
+            handleNavigation('/home');
+        } else {
+            setIsLoadingUser(false);
+        }
+
+        return () => {
+            console.log('===== Unmouted SignUpPage.tsx component =====');
+        };
+    }, []);
 
     /**
      * function to validate form
@@ -149,9 +170,10 @@ const SignUp: React.FC = () => {
      * @returns
      */
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        setIsLoading(true);
         event.preventDefault();
+        setIsLoading(true);
         if (emailError || passwordError || confirmPasswordError || nameError) {
+            setIsLoading(false);
             return;
         }
 
@@ -160,37 +182,26 @@ const SignUp: React.FC = () => {
         const name = String(data.get('name'));
         const password = String(data.get('password'));
         // const allowExtraEmails = String(data.get('allowExtraEmails'));
+        const auth = getAuth();
 
+        let userCredential;
         try {
-            const auth = getAuth();
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-            // save user in database
-            const newUser: UserModal = {
-                userId: userCredential.user.uid,
-                username: name,
-                role: 2,
-                createAt: new Date(),
-                updateAt: '',
-                members: [],
-                deleteFlag: 0,
-            };
-            const db = await getFirestore(firebaseApp);
-            await addDoc(collection(db, 'users'), newUser);
-
-            // redirect /home
-            console.log('handleNavigation');
-            setIsLoadingUser(false);
-            handleNavigation('/home');
+            // create a new user
+            userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
+            console.log('===== Sign Up =====');
+            console.log('===== createUserWithEmailAndPassword =====');
+            console.log('error:', error);
             switch (error.code) {
                 case 'auth/email-already-in-use':
+                    console.log(error.code);
                     setEmailError(true);
                     setEmailErrorMessage('Email exists');
                     break;
                 default:
+                    console.log('default');
                     setNameError(true);
                     setEmailError(true);
                     setPasswordError(true);
@@ -204,10 +215,104 @@ const SignUp: React.FC = () => {
                     // === END TODO ===
                     break;
             }
+            setIsLoading(false);
+            return;
         }
+
+        try {
+            // save user in database
+            const newUser: UserModal = {
+                userId: userCredential.user.uid,
+                username: name,
+                email: email,
+                role: 2, // role employee
+                createAt: new Date(),
+                updateAt: '',
+                members: [],
+                deleteFlag: 0,
+            };
+
+            // connect firestore
+            const db = getFirestore(firebaseApp);
+
+            // Add a new document in collection "users"
+            await setDoc(doc(db, 'users', userCredential?.user.uid), newUser);
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.log('===== Sign Up =====');
+            console.log('===== save user in database =====');
+            console.log('error:', error);
+            switch (error.code) {
+                case 'permission-denied':
+                    console.log(error.code);
+                    setNameError(true);
+                    setEmailError(true);
+                    setPasswordError(true);
+                    setConfirmPasswordError(true);
+                    setNameErrorMessage('The system is experiencing an error, please try again later.');
+                    setEmailErrorMessage('The system is experiencing an error, please try again later.');
+                    setPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    setConfirmPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    break;
+                default:
+                    console.log('default');
+                    setNameError(true);
+                    setEmailError(true);
+                    setPasswordError(true);
+                    setConfirmPasswordError(true);
+                    setNameErrorMessage('The system is experiencing an error, please try again later.');
+                    setEmailErrorMessage('The system is experiencing an error, please try again later.');
+                    setPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    setConfirmPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                    // ===== TODO =====
+                    // send mail for admin
+                    // === END TODO ===
+                    break;
+            }
+            try {
+                const user = auth.currentUser;
+                if (user) await deleteUser(user);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (error: any) {
+                console.log('===== Sign Up =====');
+                console.log('===== delete user when can"t save in database =====');
+                console.log('error:', error);
+                switch (error.code) {
+                    default:
+                        console.log('default');
+                        setNameError(true);
+                        setEmailError(true);
+                        setPasswordError(true);
+                        setConfirmPasswordError(true);
+                        setNameErrorMessage('The system is experiencing an error, please try again later.');
+                        setEmailErrorMessage('The system is experiencing an error, please try again later.');
+                        setPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                        setConfirmPasswordErrorMessage('The system is experiencing an error, please try again later.');
+                        // ===== TODO =====
+                        // send mail for admin
+                        // === END TODO ===
+                        break;
+                }
+            }
+            setIsLoading(false);
+            return;
+        }
+        // redirect /home
+        console.log('handleNavigation');
+        setIsLoadingUser(false);
+        handleNavigation('/home');
 
         setIsLoading(false);
     };
+
+    if (isLoadingUser) {
+        return (
+            <div className="flex h-[100vh] w-full items-center justify-center z-[99999999] ">
+                <CircularIndeterminate />
+            </div>
+        );
+    }
 
     return (
         <BaseNewPage>

@@ -1,6 +1,7 @@
 export interface UserModal {
     userId: string;
     username: string;
+    email: string;
     role: number;
     createAt: Date;
     updateAt: Date | string;
