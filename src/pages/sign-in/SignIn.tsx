@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 // firebase
 import { firebaseApp } from '../../firebase';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 // The components
 import Box from '@mui/material/Box';
@@ -35,6 +35,7 @@ import useCommonStores from '../../stores/commonStores';
 // The customized hooks
 import { useHandleNavigation } from '../../hooks/useHandleNavigation';
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
 // The constants
 
@@ -83,8 +84,6 @@ const SignIn: React.FC = () => {
 
     // stores
     // authentication stores
-    const setUserCredential = useAuthenticationStores((state) => state.setUserCredential);
-    const setIsLogged = useAuthenticationStores((state) => state.setIsLogged);
     const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
     const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
     // common stores
@@ -106,7 +105,7 @@ const SignIn: React.FC = () => {
         // firebase
         const auth = getAuth(firebaseApp);
         const user = auth.currentUser;
-        console.log('currentUser:', user);
+
         if (user) {
             handleNavigation('/home');
         } else {
@@ -142,12 +141,25 @@ const SignIn: React.FC = () => {
         }
 
         if (email && password) {
-            try {
-                const auth = getAuth(firebaseApp);
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                setUserCredential(userCredential);
-                setIsLogged(true);
+            const auth = getAuth(firebaseApp);
 
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+                const db = getFirestore(firebaseApp);
+                const userInformationSnap = await getDoc(doc(db, 'users', userCredential.user.uid));
+
+                if (!userInformationSnap.data()) {
+                    throw {
+                        code: 'auth/user-not-exist',
+                    };
+                }
+                if (userInformationSnap.data()?.deleteFlag) {
+                    throw {
+                        code: 'auth/user-disabled',
+                    };
+                }
+                // setIsLogged(true);
                 handleNavigation('/home');
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -166,6 +178,10 @@ const SignIn: React.FC = () => {
                         setEmailError(true);
                         setEmailErrorMessage('Your account is locked! Please contact admin...');
                         break;
+                    case 'auth/user-not-exist':
+                        setEmailError(true);
+                        setEmailErrorMessage('Your account is locked! Please contact admin...');
+                        break;
                     default:
                         setEmailError(true);
                         setPasswordError(true);
@@ -176,6 +192,7 @@ const SignIn: React.FC = () => {
                         // === END TODO ===
                         break;
                 }
+                signOut(auth);
             }
         }
 

@@ -22,10 +22,11 @@ import styles from './ProjectCreatingModal.module.css';
 // The stores
 // The customized hooks
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
+import { Project } from '../../types/Project';
+import useAuthenticationStores from '../../stores/authenticationStores';
 
 // The constants
 // The interfaces
-import { Project } from '../../pages/home/HomePage';
 
 // The globals
 export interface IValidation {
@@ -44,6 +45,10 @@ export interface IProjectCreatingModal {
 const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose }) => {
     // The customized hooks
     const cx = useHandleBindingClass(styles);
+
+    // stores
+    // authentication stores
+    const userInformation = useAuthenticationStores((state) => state.userInformation);
 
     // states
     const [isLoadingCreateNewProject, setIsLoadingCreateNewProject] = useState(false);
@@ -100,7 +105,7 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
             isValid = true;
         }
 
-        if (endDate !== null && startDate !== null && endDate < startDate) {
+        if (!!endDate && !!startDate && endDate < startDate) {
             setValidate((prevValidate) => ({
                 ...prevValidate,
                 startDate: {
@@ -134,20 +139,39 @@ const ProjectCreatingModal: React.FC<IProjectCreatingModal> = ({ isOpen, onClose
         // =========== START TODO CALL API ==========
         timeoutId.current = setTimeout(() => {
             setIsLoadingCreateNewProject(false);
-            handleClose({
+            const project: Project = {
+                projectId: '123',
                 projectName: projectName,
+                createAt: dayjs().format('YYYY/MM/DD'),
+                updateAt: dayjs().format('YYYY/MM/DD'),
+                creator: {
+                    userId: userInformation?.userId || 'no-user',
+                    username: userInformation?.username || 'no-user',
+                },
+                projectManager: [
+                    {
+                        userId: 'TODO',
+                        username: 'TODO',
+                    },
+                ],
+                leaders: [],
+                members: [],
+                tasks: [],
+                startDate: startDate !== null ? startDate.format('YYYY/MM/DD') : '',
+                endDate: endDate !== null ? endDate.format('YYYY/MM/DD') : '',
+                actualStartDate: null,
+                actualEndDate: null,
                 status: handleSetStatus(startDate),
-                startDate: startDate?.format('YYYY/MM/DD'),
-                endDate: endDate?.format('YYYY/MM/DD'),
-                projectManager: 'Taan',
-            });
+                deleteFlag: false,
+            };
+            handleClose(project);
         }, 2000);
         // =========== END TODO CALL API ==========
     }, [projectName, startDate, endDate]);
 
     const handleSetStatus = (startDate: Dayjs | null) => {
-        if (startDate && startDate > dayjs()) return 'Coming Soon';
-        return 'Starting';
+        if (startDate && startDate > dayjs()) return 'COMING SOON';
+        return 'ONPROGESS';
     };
 
     const handleClose = (project?: Project | undefined) => {

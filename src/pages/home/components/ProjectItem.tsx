@@ -14,16 +14,15 @@ import styles from './ProjectItem.module.css';
 // The customized hooks
 import { useHandleBindingClass } from '../../../hooks/useHandleBindingClass';
 
+// types
+import { Project } from '../../../types/Project';
+
 // The constants
 export interface IProjectItem {
-    key: string | number;
-    status: string;
-    projectName: string;
-    startDate: string | undefined;
-    endDate: string | undefined;
-    projectManager: string;
+    key?: string | number;
+    project: Project;
 }
-const ProjectItem: React.FC<IProjectItem> = (project: IProjectItem) => {
+const ProjectItem: React.FC<IProjectItem> = ({ project }: IProjectItem) => {
     const cx = useHandleBindingClass(styles);
 
     return (
@@ -72,7 +71,7 @@ const ProjectItem: React.FC<IProjectItem> = (project: IProjectItem) => {
                             'text-normal font-normal max-w-[calc(100%-6.4rem-1.rem)] overflow-hidden text-ellipsis',
                         )}
                     >
-                        {project.projectManager}
+                        {project.projectManager.map((item) => item.username).toString()}
                     </p>
                 </div>
             </div>

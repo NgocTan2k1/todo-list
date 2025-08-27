@@ -3,8 +3,9 @@ import { Route, Routes } from 'react-router-dom';
 import { type IRoute, privateRoutes, publicRoutes } from './routers/routes';
 
 // firebase
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { firebaseApp } from './firebase';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
 // The components
 import Box from '@mui/material/Box';
@@ -33,7 +34,8 @@ const App: React.FC = () => {
     const setIsLogged = useAuthenticationStores((state) => state.setIsLogged);
     const isLoadingUser = useAuthenticationStores((state) => state.isLoadingUser);
     const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
-    // common stores
+    const setUserInformation = useAuthenticationStores((state) => state.setUserInformation);
+    // common storesu
     const isLoading = useCommonStores((state) => state.isLoading);
     const setIsLoading = useCommonStores((state) => state.setIsLoading);
 
@@ -41,19 +43,54 @@ const App: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [routes, setRoutes] = useState<IRoute[] | []>([]);
 
+    /**
+     * ========== UseEffect ==========
+     */
+    // listen authentication
     useEffect(() => {
+        console.log('===== Mouted App.tsx =====');
         // firebase
         const auth = getAuth(firebaseApp);
+
+        const getData = async (uid: string) => {
+            try {
+                const db = getFirestore(firebaseApp);
+                const userInformationSnap = await getDoc(doc(db, 'users', uid));
+
+                if (!userInformationSnap.data() || userInformationSnap.data()?.deleteFlag) {
+                    throw {
+                        code: 'auth/user-not-exist',
+                    };
+                }
+
+                setUserInformation({
+                    userId: userInformationSnap.data()?.userId,
+                    username: userInformationSnap.data()?.username,
+                    email: userInformationSnap.data()?.email,
+                    role: userInformationSnap.data()?.role,
+                    createAt: userInformationSnap.data()?.createAt,
+                    updateAt: userInformationSnap.data()?.updateAt,
+                    members: userInformationSnap.data()?.members,
+                    deleteFlag: userInformationSnap.data()?.deleteFlag,
+                });
+                setIsLogged(true);
+                setRoutes([...privateRoutes, ...publicRoutes]);
+            } catch (error) {
+                setIsLogged(false);
+                setRoutes(publicRoutes);
+                signOut(auth);
+            }
+        };
 
         setIsLoading(false);
         onAuthStateChanged(auth, (user) => {
             setIsLoadingUser(true);
             if (user) {
-                setIsLogged(true);
-                setRoutes([...privateRoutes, ...publicRoutes]);
+                getData(user.uid);
             } else {
                 setIsLogged(false);
                 setRoutes(publicRoutes);
+                signOut(auth);
             }
             setIsLoadingUser(false);
         });

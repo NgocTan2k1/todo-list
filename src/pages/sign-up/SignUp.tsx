@@ -36,7 +36,7 @@ import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
 
 // The constants
 // The interfaces
-import { UserModal } from '../../modals/User';
+import { type User } from '../../types/User';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -97,7 +97,6 @@ const SignUp: React.FC = () => {
         // firebase
         const auth = getAuth(firebaseApp);
         const user = auth.currentUser;
-        console.log('currentUser:', user);
         if (user) {
             handleNavigation('/home');
         } else {
@@ -221,7 +220,7 @@ const SignUp: React.FC = () => {
 
         try {
             // save user in database
-            const newUser: UserModal = {
+            const newUser: User = {
                 userId: userCredential.user.uid,
                 username: name,
                 email: email,
@@ -229,7 +228,7 @@ const SignUp: React.FC = () => {
                 createAt: new Date(),
                 updateAt: '',
                 members: [],
-                deleteFlag: 0,
+                deleteFlag: false,
             };
 
             // connect firestore

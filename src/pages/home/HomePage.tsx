@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 import BaseNewPage from '../../components/layout/BasePage';
 import BaseHeader from '../../components/layout/BaseHeader';
 import ProjectItem from './components/ProjectItem';
+import ProjectCreatingModal from '../../components/modal/ProjectCreatingModal';
 
 // CSS
 import styles from './HomePage.module.css';
@@ -20,10 +21,10 @@ import useAuthenticationStores from '../../stores/authenticationStores';
 
 // The customized hooks
 import { useHandleBindingClass } from '../../hooks/useHandleBindingClass';
-import ProjectCreatingModal from '../../components/modal/ProjectCreatingModal';
-import { getAuth } from 'firebase/auth';
-import { firebaseApp } from '../../firebase';
 import { useHandleNavigation } from '../../hooks/useHandleNavigation';
+
+// types
+import { Project } from '../../types/Project';
 
 // The constants
 
@@ -34,13 +35,6 @@ export interface IValidation {
         errorMessage: string;
     };
 }
-export interface Project {
-    projectName: string;
-    status: string;
-    startDate: string | undefined;
-    endDate: string | undefined;
-    projectManager: string;
-}
 
 const HomePage: React.FC = () => {
     // The customized hooks
@@ -50,6 +44,7 @@ const HomePage: React.FC = () => {
     // stores
     // authentication stores
     const setIsLoadingUser = useAuthenticationStores((state) => state.setIsLoadingUser);
+    const isLogged = useAuthenticationStores((state) => state.isLogged);
 
     // states
     const [isProjectCreatingModal, setIsProjectCreatingModal] = useState(false);
@@ -59,46 +54,13 @@ const HomePage: React.FC = () => {
     // const startDateRef = useRef<Dayjs | null>(null);
     // const endDateRef = useRef<Dayjs | null>(null);
     // const validateRef = useRef<IValidation>({});
-    const [array, setArray] = useState<Project[]>([
-        {
-            projectName: 'ProjectName1',
-            status: 'pending',
-            startDate: '2024/09/01',
-            endDate: undefined,
-            projectManager: 'Tanpn',
-        },
-        {
-            projectName: 'ProjectName1',
-            status: 'done',
-            startDate: '2024/09/01',
-            endDate: '2024/20/10',
-            projectManager: 'Tanpn',
-        },
-        {
-            projectName: 'ProjectName1',
-            status: 'onprogress',
-            startDate: '2024/09/01',
-            endDate: undefined,
-            projectManager: 'Tanpn',
-        },
-        {
-            projectName: 'ProjectName1',
-            status: 'fail',
-            startDate: '2024/09/01',
-            endDate: '2024/09/10',
-            projectManager: 'Tanpn',
-        },
-    ]);
+    const [array, setArray] = useState<Project[] | []>([]);
 
     // effect
     useEffect(() => {
         console.log('===== Mouted HomePage.tsx component =====');
         setIsLoadingUser(true);
-        // firebase
-        const auth = getAuth(firebaseApp);
-        const user = auth.currentUser;
-        console.log('currentUser:', user);
-        if (!user) {
+        if (!isLogged) {
             handleNavigation('/sign-in');
         }
         setIsLoadingUser(false);
@@ -106,7 +68,7 @@ const HomePage: React.FC = () => {
             console.log('===== Unmouted HomePage.tsx component =====');
             clearTimeout(timeoutId.current);
         };
-    }, []);
+    }, [isLogged]);
 
     // functions
     const handleShowProject = (project: Project | undefined) => {
@@ -143,14 +105,7 @@ const HomePage: React.FC = () => {
                         <AddCircleOutlineIcon className={cx('item__icon', '!w-[4rem] !h-[4rem]')} />
                     </Paper>
                     {array.map((project, index) => (
-                        <ProjectItem
-                            key={index}
-                            projectName={project.projectName}
-                            status={project.status}
-                            startDate={project.startDate}
-                            endDate={project.endDate}
-                            projectManager={project.projectManager}
-                        />
+                        <ProjectItem key={index} project={project} />
                     ))}
                 </Box>
             </div>
